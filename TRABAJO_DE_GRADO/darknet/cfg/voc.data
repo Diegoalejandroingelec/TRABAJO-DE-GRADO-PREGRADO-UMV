@@ -1,0 +1,6 @@
+classes= 20
+train  = /home/diego/voc_data_yeah/train.txt
+valid  = /home/diego/voc_data_yeah/2007_test.txt
+names =/home/diego/darknet/data/voc.names
+backup = /home/diego/darknet/backup
+
