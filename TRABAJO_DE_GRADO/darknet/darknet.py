@@ -523,7 +523,7 @@ def performBatchDetect(thresh= 0.25, configPath = "./cfg/yolov4.cfg", weightPath
     return batch_boxes, batch_scores, batch_classes    
 
 if __name__ == "__main__":
-    print(performDetect(imagePath="data/26.jpg"))
+    print(performDetect(imagePath="data/80.jpg"))
     print(performDetect(imagePath="data/94.jpg"))
     #Uncomment the following line to see batch inference working 
     #print(performBatchDetect())
