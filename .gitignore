@@ -14,4 +14,7 @@
 *.png
 *.txt
 *.weights
+*.jpeg
+*.JPEG
+yolov4.conv.137
 
