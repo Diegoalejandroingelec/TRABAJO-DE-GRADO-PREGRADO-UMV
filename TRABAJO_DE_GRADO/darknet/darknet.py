@@ -409,6 +409,7 @@ def performDetect(imagePath, thresh= 0.30, configPath = "./cfg/yolov4-libros.cfg
             image = io.imread(imagePath)
             print("*** "+str(len(detections))+" Results, color coded by confidence ***")
             imcaption = []
+            print(detections)
             for detection in detections:
                 label = detection[0]
                 confidence = detection[1]
@@ -455,6 +456,12 @@ def performDetect(imagePath, thresh= 0.30, configPath = "./cfg/yolov4-libros.cfg
             }
         except Exception as e:
             print("Unable to show image: "+str(e))
+    
+    if not showImage:
+        detections = {
+            "detections": detections,
+            "image_name": imagePath
+        }
     return detections
 
 def performBatchDetect(thresh= 0.25, configPath = "./cfg/yolov4.cfg", weightPath = "yolov4.weights", metaPath= "./cfg/coco.data", hier_thresh=.5, nms=.45, batch_size=3):
@@ -522,8 +529,20 @@ def performBatchDetect(thresh= 0.25, configPath = "./cfg/yolov4.cfg", weightPath
     free_batch_detections(batch_dets, batch_size)
     return batch_boxes, batch_scores, batch_classes    
 
-if __name__ == "__main__":
-    print(performDetect(imagePath="data/80.jpg"))
-    print(performDetect(imagePath="data/94.jpg"))
+import glob
+import pickle    
+def save_obj(obj, name ):
+    with open('detect_images_info/'+ name + '.pkl', 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+
+if __name__ == "__main__":    
+    path_im_prueba_1='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/data/imagenes_libros/*.jpg'
+    imagenes_1 = glob.glob(path_im_prueba_1)
+    detection_images=[]
+    for n in imagenes_1:
+        detection_images.append(performDetect(imagePath=n,showImage=False)) 
+        
+    save_obj(detection_images, 'informacion_imagenes' )
     #Uncomment the following line to see batch inference working 
     #print(performBatchDetect())
