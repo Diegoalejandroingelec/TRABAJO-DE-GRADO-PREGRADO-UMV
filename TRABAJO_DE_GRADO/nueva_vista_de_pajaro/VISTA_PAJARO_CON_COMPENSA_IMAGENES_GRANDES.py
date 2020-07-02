@@ -3,6 +3,7 @@ import cv2
 import glob
 import os
 import math
+import pickle
 ###############################################################
 ####
 ####
@@ -405,7 +406,7 @@ def calibra_camara(tam_cuadros,path_imagenes,path):
 
 
 imagenes_a_x_grados=66
-path_imagenes='/home/diego/UNIVERSIDAD/TRABAJO_DE_GRADO/nueva_vista_de_pajaro'+str(imagenes_a_x_grados)+'_grados'
+path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
 path='resultados_'+str(imagenes_a_x_grados)
 tam_cuadros=17
 
@@ -429,7 +430,7 @@ coord_sup_izquierda,coord_sup_derecha,coord_inf_derecha,coord_inf_izquierda,img_
 
 
 imagenes_a_x_grados=66
-path_imagenes='/home/diego/UNIVERSIDAD/TRABAJO_DE_GRADO/nueva_vista_de_pajaro'+str(imagenes_a_x_grados)+'_grados'
+path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
 path_resultados='RESULTADOS_COMPENSADOS_66'
 #
 #
@@ -439,25 +440,27 @@ num_res=1
 #
 #
 #
+path_del_tablero='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/66_grados/tablero_esquinas.JPG'
+factor_de_conv_lineal_Vertical,factor_de_conv_lineal_Horizontal,factor_de_conv_area=compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,angulo_pitch,angulo_roll,path_del_tablero,path_resultados,mtx,dist,6666)
+
 imagenes_de_prueba=glob.glob(path_imagenes+'/*.JPG')
 i=0
 for finame in imagenes_de_prueba:   
-    factor_de_conv_lineal_Vertical,factor_de_conv_lineal_Horizontal,factor_de_conv_area=compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,angulo_pitch,angulo_roll,finame,path_resultados,mtx,dist,i)
+    compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,angulo_pitch,angulo_roll,finame,path_resultados,mtx,dist,i)
     i=i+1
 #
 #
 #
 #
 #
+def save_obj(obj, name ):
+    with open('factores_de_conversion/'+ name + '.pkl', 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
 
 
-
-
-
-
-
-
-
+save_obj(factor_de_conv_lineal_Vertical,'factor_conv_lineal_vertical')
+save_obj(factor_de_conv_lineal_Horizontal,'factor_conv_lineal_horizontal')
+save_obj(factor_de_conv_area,'factor_conv_area')
 
 
