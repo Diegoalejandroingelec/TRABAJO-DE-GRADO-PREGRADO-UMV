@@ -79,34 +79,44 @@ detection_images= load_obj('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE
 ####
 #####################################################################
 Folder_reporte='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ubicacion y magnitud'
+
+name_image_List=[]
+label=[]
+area_estimada=[]
+Distancia_estimada=[]
+angulo=[]
+
 for n_imagen_detectada in range(len(detection_images)):
     name_image=detection_images[n_imagen_detectada]['image_name']
     img=cv2.imread(name_image,1)
     punto_central=PUNTO_CENTRAL_INI_CAMPO_VISUAL(img)
     for detections_in_one_image in range(len(detection_images[n_imagen_detectada]['detections'])):
-        label=detection_images[n_imagen_detectada]['detections'][detections_in_one_image][0]
+        name_image_List.append(name_image)
+        label.append(detection_images[n_imagen_detectada]['detections'][detections_in_one_image][0])
         confidence=detection_images[n_imagen_detectada]['detections'][detections_in_one_image][1]
         datos_del_recuadro=detection_images[n_imagen_detectada]['detections'][detections_in_one_image][2]
         area_pixeles=datos_del_recuadro[2]*datos_del_recuadro[3]
         cateto_opuesto=punto_central[1]-int(datos_del_recuadro[1])
         cateto_adyasente=punto_central[0]-int(datos_del_recuadro[0])
         
-        angulo=obtener_angulo(cateto_opuesto,cateto_adyasente)
+        angulo.append(obtener_angulo(cateto_opuesto,cateto_adyasente))
         
-        area_estimada=area_pixeles*factor_de_conv_area
+        area_estimada.append(area_pixeles*factor_de_conv_area)
         
         cateto_opuesto_unidades_del_mundo=factor_de_conv_lineal_Vertical*cateto_opuesto
         cateto_adyasente_unidades_del_mundo=factor_de_conv_lineal_Horizontal*cateto_adyasente
         
-        Distancia_estimada=math.sqrt(cateto_opuesto_unidades_del_mundo**2+cateto_adyasente_unidades_del_mundo**2)
+        Distancia_estimada.append(math.sqrt(cateto_opuesto_unidades_del_mundo**2+cateto_adyasente_unidades_del_mundo**2))
 
-        file = open(Folder_reporte+'/REPORTE.txt', "a")
-        file.write('LA IMAGEN ANALIZADA ES: '+ name_image+'\n\r')
-        file.write('SE DETECTO UNA CLASE TIPO: '+label+'\n\r')
-        file.write('EL AREA ESTIMADA ES: '+ str(area_estimada)+' cm2'+'\n\r')
-        file.write('LA DISTANCIA ESTIMADA ES: '+ str(Distancia_estimada)+ ' cm'+'\n\r')
-        file.write('EL ANGULO ESTIMADO ES: '+ str(angulo)+ ' GRADOS'+'\n\r')
-        file.close()
+
+data = {'PATH IMAGEN':name_image_List,
+        'CLASE': label,
+        'AREA ESTIMADA': area_estimada,
+        'DISTANCIA ESTIMADA': Distancia_estimada,
+        'ANGULO ESTIMADO':angulo }
+df = pd.DataFrame(data, columns = ['PATH IMAGEN', 'CLASE', 'AREA ESTIMADA','DISTANCIA ESTIMADA', 'ANGULO ESTIMADO'])
+df.to_csv('Reporte_detecciones.csv')
+        
 
 
 
