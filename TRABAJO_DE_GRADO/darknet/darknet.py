@@ -530,19 +530,30 @@ def performBatchDetect(thresh= 0.25, configPath = "./cfg/yolov4.cfg", weightPath
     return batch_boxes, batch_scores, batch_classes    
 
 import glob
-import pickle    
+import pickle   
+import errno
+import time
+ 
 def save_obj(obj, name ):
     with open('detect_images_info/'+ name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
+    path_resultado_de_deteccion='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/detect_images_info'
+    try:
+        os.mkdir(path_resultado_de_deteccion) 
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise    
     path_im_prueba_1='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/data/imagenes_libros/*.jpg'
     imagenes_1 = glob.glob(path_im_prueba_1)
     detection_images=[]
+    tmstmp1 = time.time()
     for n in imagenes_1:
         detection_images.append(performDetect(imagePath=n,showImage=False)) 
-        
+    tmstmp2 = time.time()
+    print('Total time elapsed = ', tmstmp2 - tmstmp1)
     save_obj(detection_images, 'informacion_imagenes' )
     #Uncomment the following line to see batch inference working 
     #print(performBatchDetect())
