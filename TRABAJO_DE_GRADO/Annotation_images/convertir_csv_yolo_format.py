@@ -254,12 +254,12 @@ def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder
             
             
        
-Folder_labels='/home/diego/UNIVERSIDAD/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/labels'
-VoTT_csv = '/home/diego/UNIVERSIDAD/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/libros_2-export.csv'
-image_path='/home/diego/UNIVERSIDAD/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/'
-path_clases_file='/home/diego/UNIVERSIDAD/TRABAJO_DE_GRADO/Annotation_images/clases'
-Folder_para_direccion_de_imagenes_train='/home/diego/UNIVERSIDAD/TRABAJO_DE_GRADO/Annotation_images/train.txt'
-Folder_para_direccion_de_imagenes_test='/home/diego/UNIVERSIDAD/TRABAJO_DE_GRADO/Annotation_images/test.txt'
+Folder_labels='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/labels'
+VoTT_csv = '/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/libros_2-export.csv'
+image_path='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/'
+path_clases_file='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/clases'
+Folder_para_direccion_de_imagenes_train='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/train.txt'
+Folder_para_direccion_de_imagenes_test='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/test.txt'
 
 try:
     os.mkdir(path_clases_file) 
