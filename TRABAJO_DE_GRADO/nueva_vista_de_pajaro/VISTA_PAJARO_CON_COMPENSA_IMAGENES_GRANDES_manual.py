@@ -74,7 +74,6 @@ def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquie
     pts2 = np.float32([[bias_X,bias_Y],[cols+bias_X,bias_Y],[bias_X,rows+bias_Y],[bias_X+cols,bias_Y+rows]])
     M = cv2.getPerspectiveTransform(pts2,pts1)
     transf_bird_eye = cv2.warpPerspective(img_patron,M,(ancho_IMG,altura_IMG),flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
-    #print(transf_bird_eye.shape)
     
     #cv2.imshow('BIRD EYE TRANSFORM_1',transf_bird_eye)
     #cv2.waitKey(0)
@@ -105,8 +104,8 @@ def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquie
     flag_10=0
     flag_11=0
     for i in range(transf_bird_eye.shape[1]):         
-        i_dd=transf_bird_eye[0,i,1]
-        d_ii=transf_bird_eye[0,(transf_bird_eye.shape[1]-1)-i,1]
+        i_dd=transf_bird_eye[5,i,1]
+        d_ii=transf_bird_eye[5,(transf_bird_eye.shape[1]-1)-i,1]
         if i_dd!=0 and flag_10==0:
             coordenada_ini=i
             flag_10=1
@@ -181,6 +180,7 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
     
     bias_X=5000
     bias_Y=5000
+    AN_AL=(10000,10000)
     Krc=mtx
     Kvc=np.array([[fx,   0.        , bias_X],
            [  0.        , fy, bias_Y],
@@ -191,10 +191,13 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
     
     Mr=np.dot(np.dot(Krc,M_comp),Kvc_m1)
     
-    transf_bird_eye = cv2.warpPerspective(img_patron,Mr,(10000,10000),flags=cv2.INTER_LINEAR+cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
+    transf_bird_eye = cv2.warpPerspective(img_patron,Mr,AN_AL,flags=cv2.INTER_LINEAR+cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
     #cv2.imshow('BIRD EYE TRANSFORM_1',transf_bird_eye)
     #cv2.waitKey(0)
-    
+    mostrarrrr=cv2.resize(transf_bird_eye  ,dim_resize)
+    cv2.imshow('IMAGEN ORIGINAL',mostrarrrr)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     
     #CÁLCULO DE LA UBICACIÓN DE LAS COORDENADAS LÍMITES SUPERIOR IZQUIERDA Y SUPERIOR DERECHA DE LA IMÁGEN ORIGINAL
     #EN LAS COORDENADAS DE LA IMÁGEN CON VISTA DE PÁJARO 
@@ -219,7 +222,7 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
     Mr=np.dot(np.dot(Krc,M_comp),Kvc_m1)
     
     
-    transf_bird_eye = cv2.warpPerspective(img_patron,Mr,(10000,10000),flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
+    transf_bird_eye = cv2.warpPerspective(img_patron,Mr,AN_AL,flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
     #CÁLCULO DE LA UBICACIÓN DE LAS COORDENADAS LÍMITES INFERIOR IZQUIERDA E INFERIOR DERECHA DE LA IMÁGEN ORIGINAL
     #EN LAS COORDENADAS DE LA IMÁGEN CON VISTA DE PÁJARO 
     limites_imagen.append(coordenadas_en_vista_de_pajaro(Mr,0,(img_patron.shape[0]-1)))
@@ -228,8 +231,8 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
     flag_10=0
     flag_11=0
     for i in range(transf_bird_eye.shape[1]):         
-        i_dd=transf_bird_eye[0,i,1]
-        d_ii=transf_bird_eye[0,(transf_bird_eye.shape[1]-1)-i,1]
+        i_dd=transf_bird_eye[5,i,1]
+        d_ii=transf_bird_eye[5,(transf_bird_eye.shape[1]-1)-i,1]
         if i_dd!=0 and flag_10==0:
             coordenada_ini=i
             flag_10=1
@@ -404,10 +407,10 @@ def save_obj(obj, name ):
 
 
 
-imagenes_a_x_grados=66
+imagenes_a_x_grados=50
 path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
 path='resultados_'+str(imagenes_a_x_grados)
-path_resultados='RESULTADOS_COMPENSADOS_66'
+path_resultados='RESULTADOS_1234'
 
 try:
     os.mkdir('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+path) 
@@ -439,18 +442,18 @@ coord_sup_izquierda,coord_sup_derecha,coord_inf_derecha,coord_inf_izquierda,img_
 
 
 
-imagenes_a_x_grados=66
+imagenes_a_x_grados=50
 path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
 
 #
 #
 angulo_pitch=0
-angulo_roll=0
+angulo_roll=-1
 num_res=1
 #
 #
 #
-path_del_tablero='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/66_grados/tablero_esquinas.JPG'
+path_del_tablero='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/50_grados/tablero_esquinas.JPG'
 factor_de_conv_lineal_Vertical,factor_de_conv_lineal_Horizontal,factor_de_conv_area=compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,angulo_pitch,angulo_roll,path_del_tablero,path_resultados,mtx,dist,66661,dim_resize)
 
 
@@ -462,7 +465,7 @@ save_obj(factor_de_conv_area,'factor_conv_area')
 imagenes_de_prueba=glob.glob(path_imagenes+'/*.JPG')
 i=0
 for finame in imagenes_de_prueba:   
-    compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,angulo_pitch,angulo_roll,finame,path_resultados,mtx,dist,i)
+    compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,angulo_pitch,angulo_roll,finame,path_resultados,mtx,dist,i,dim_resize)
     i=i+1
 
 
