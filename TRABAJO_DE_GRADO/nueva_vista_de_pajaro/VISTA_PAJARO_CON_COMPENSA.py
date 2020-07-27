@@ -97,8 +97,8 @@ def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquie
     flag_10=0
     flag_11=0
     for i in range(transf_bird_eye.shape[1]):         
-        i_dd=transf_bird_eye[0,i,1]
-        d_ii=transf_bird_eye[0,(transf_bird_eye.shape[1]-1)-i,1]
+        i_dd=transf_bird_eye[5,i,1]
+        d_ii=transf_bird_eye[5,(transf_bird_eye.shape[1]-1)-i,1]
         if i_dd!=0 and flag_10==0:
             coordenada_ini=i
             flag_10=1
@@ -167,6 +167,8 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
     
     bias_X=400
     bias_Y=550
+    An=2000
+    Al=2000
     Krc=mtx
     Kvc=np.array([[fx,   0.        , bias_X],
            [  0.        , fy, bias_Y],
@@ -177,10 +179,13 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
     
     Mr=np.dot(np.dot(Krc,M_comp),Kvc_m1)
     
-    transf_bird_eye = cv2.warpPerspective(img_patron,Mr,(2000,2000),flags=cv2.INTER_LINEAR+cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
+    transf_bird_eye = cv2.warpPerspective(img_patron,Mr,(An,Al),flags=cv2.INTER_LINEAR+cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
     #cv2.imshow('BIRD EYE TRANSFORM_1',transf_bird_eye)
     #cv2.waitKey(0)
     
+    # cv2.imshow('Esquinas Segmentadas', transf_bird_eye)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     
     
     #CÁLCULO DE LA UBICACIÓN DE LAS COORDENADAS LÍMITES SUPERIOR IZQUIERDA Y SUPERIOR DERECHA DE LA IMÁGEN ORIGINAL
@@ -206,7 +211,12 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
     Mr=np.dot(np.dot(Krc,M_comp),Kvc_m1)
     
     
-    transf_bird_eye = cv2.warpPerspective(img_patron,Mr,(1000,1000),flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
+    transf_bird_eye = cv2.warpPerspective(img_patron,Mr,(An,Al),flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
+    
+    # cv2.imshow('Esquinas Segmentadas', transf_bird_eye)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    
     #CÁLCULO DE LA UBICACIÓN DE LAS COORDENADAS LÍMITES INFERIOR IZQUIERDA E INFERIOR DERECHA DE LA IMÁGEN ORIGINAL
     #EN LAS COORDENADAS DE LA IMÁGEN CON VISTA DE PÁJARO 
     limites_imagen.append(coordenadas_en_vista_de_pajaro(Mr,0,(img_patron.shape[0]-1)))
@@ -215,8 +225,8 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
     flag_10=0
     flag_11=0
     for i in range(transf_bird_eye.shape[1]):         
-        i_dd=transf_bird_eye[0,i,1]
-        d_ii=transf_bird_eye[0,(transf_bird_eye.shape[1]-1)-i,1]
+        i_dd=transf_bird_eye[5,i,1]
+        d_ii=transf_bird_eye[5,(transf_bird_eye.shape[1]-1)-i,1]
         if i_dd!=0 and flag_10==0:
             coordenada_ini=i
             flag_10=1
@@ -251,6 +261,10 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
    # cv2.imshow('BIRD EYE TRANSFORM_1',transf_bird_eye)
    #cv2.waitKey(0)
     transf_bird_eye=cv2.resize(transf_bird_eye  , (an , al))
+    # cv2.imshow('Esquinas Segmentadas', transf_bird_eye)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    
     cols,rows,bias_XX,bias_YY=matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,transf_bird_eye,path_resultados,num_res)
     
     
@@ -417,8 +431,8 @@ def calibra_camara(tam_cuadros,path_imagenes,path):
 
 
 
-imagenes_a_x_grados=66
-path_imagenes='C:/Users/diego/Desktop/todas las carpetas del escritorio/DIEGO ALEJANDRO/NOVENO SEMESTRE/Procesamiento_de_imagenes/Proyecto/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
+imagenes_a_x_grados=40
+path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
 path='resultados_'+str(imagenes_a_x_grados)
 tam_cuadros=17
 
@@ -441,12 +455,12 @@ coord_sup_izquierda,coord_sup_derecha,coord_inf_derecha,coord_inf_izquierda,img_
 
 
 
-imagenes_a_x_grados=66
-path_imagenes='C:/Users/diego/Desktop/todas las carpetas del escritorio/DIEGO ALEJANDRO/NOVENO SEMESTRE/Procesamiento_de_imagenes/Proyecto/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
-path_resultados='RESULTADOS_COMPENSADOS_66'
+imagenes_a_x_grados=60
+path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
+path_resultados='RESULTADOS_1234'
 
 
-angulo_pitch=0
+angulo_pitch=-30
 angulo_roll=0
 num_res=1
 
