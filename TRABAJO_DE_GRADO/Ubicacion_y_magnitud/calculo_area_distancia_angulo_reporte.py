@@ -22,18 +22,18 @@ def distancia(coord1,coord2):
 ####
 ###############################################################
 def obtener_angulo(cateto_opuesto,cateto_adyasente):
-    if cateto_opuesto==0 and cateto_adyasente<0:
-        angulo=180
-    if cateto_opuesto==0 and cateto_adyasente==0:
+    if cateto_adyasente==0 and cateto_opuesto<0:
         angulo=90
-    if cateto_opuesto==0 and cateto_adyasente>0:
+    if cateto_adyasente==0 and cateto_opuesto==0:
         angulo=0
-    if cateto_opuesto!=0 and cateto_adyasente==0:
-        angulo=90
-    if cateto_opuesto!=0 and cateto_adyasente>0:
-        angulo=math.degrees(math.atan(cateto_opuesto/cateto_adyasente))
-    if cateto_opuesto!=0 and cateto_adyasente<0:
-        angulo=math.degrees(math.atan(cateto_opuesto/cateto_adyasente))+180
+    if cateto_adyasente==0 and cateto_opuesto>0:
+        angulo=270
+    if cateto_adyasente!=0 and cateto_opuesto==0:
+        angulo=0
+    if cateto_adyasente!=0 and cateto_opuesto>0:
+        angulo=360-math.degrees(math.atan(cateto_opuesto/cateto_adyasente))
+    if cateto_adyasente!=0 and cateto_opuesto<0:
+        angulo=math.degrees(math.atan(-cateto_opuesto/cateto_adyasente))
     return(angulo)
 ###############################################################
 ####
@@ -96,15 +96,15 @@ for n_imagen_detectada in range(len(detection_images)):
         confidence=detection_images[n_imagen_detectada]['detections'][detections_in_one_image][1]
         datos_del_recuadro=detection_images[n_imagen_detectada]['detections'][detections_in_one_image][2]
         area_pixeles=datos_del_recuadro[2]*datos_del_recuadro[3]
-        cateto_opuesto=punto_central[1]-int(datos_del_recuadro[1])
-        cateto_adyasente=punto_central[0]-int(datos_del_recuadro[0])
+        cateto_opuesto=punto_central[0]-int(datos_del_recuadro[0])
+        cateto_adyasente=punto_central[1]-int(datos_del_recuadro[1])
         
         angulo.append(obtener_angulo(cateto_opuesto,cateto_adyasente))
         
         area_estimada.append(area_pixeles*factor_de_conv_area)
         
-        cateto_opuesto_unidades_del_mundo=factor_de_conv_lineal_Vertical*cateto_opuesto
-        cateto_adyasente_unidades_del_mundo=factor_de_conv_lineal_Horizontal*cateto_adyasente
+        cateto_adyasente_unidades_del_mundo=factor_de_conv_lineal_Vertical*cateto_adyasente
+        cateto_opuesto_unidades_del_mundo=factor_de_conv_lineal_Horizontal*cateto_opuesto
         
         Distancia_estimada.append(math.sqrt(cateto_opuesto_unidades_del_mundo**2+cateto_adyasente_unidades_del_mundo**2))
 
