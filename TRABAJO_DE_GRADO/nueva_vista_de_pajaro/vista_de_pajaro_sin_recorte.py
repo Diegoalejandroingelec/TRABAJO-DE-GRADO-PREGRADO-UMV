@@ -6,6 +6,17 @@ import math
 import pickle
 import time
 import errno
+
+def leer_txt_y_obtiene_pitch_roll_angs(path_archivo_txt):
+    with open(path_archivo_txt) as f:
+        for line in f: 
+            numbers_str = line.split(',')  
+            roll_ang=float(numbers_str[8])
+            pitch_ang=float(numbers_str[9])
+    return roll_ang,pitch_ang
+
+
+
 def corregir_recorte_imagen(y,y_menor,x,x_mayor,AN_AL):
     if y<0:
         y=0
@@ -327,6 +338,12 @@ def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,ang
 
 def compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,path_imagenes,path_resultados,mtx,dist,num_res,dim_resize,c_x,c_y):
     img_patron = cv2.imread(path_imagenes)
+    
+    # mostrarrrr=cv2.resize(img_patron  ,dim_resize)
+    # cv2.imshow('IMAGEN ORIGINAL',mostrarrrr)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()  
+    
     img_patron=undistorted_images(img_patron,mtx,dist)
  
     # mostrarrrr=cv2.resize(img_patron  ,dim_resize)
@@ -379,7 +396,7 @@ def pnt1 (event,x,y,flags,param):
         print('x= '+str(x)+ ', y= '+ str(y))
 
 def deteccion_esquinas(path_imagenes,mtx,dist,scale_percent=38):
-    img_patron = cv2.imread(path_imagenes+'/tablero_esquinas.JPG')
+    img_patron = cv2.imread(path_imagenes)
     #cv2.imshow('IMAGEN ORIGINAL',img_patron)
     #cv2.waitKey(0)
     img_patron=undistorted_images(img_patron,mtx,dist)
@@ -486,21 +503,21 @@ def calibra_camara(tam_cuadros,path_imagenes,path):
 def save_obj(obj, name ):
     with open('factores_de_conversion/'+ name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
-
-
+def crea_carpeta(path_carpeta):
+    try:
+        os.mkdir(path_carpeta)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
 
 imagenes_a_x_grados=66
 path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
 path='resultados_'+str(imagenes_a_x_grados)
-path_resultados='RESULTADOS_1234'
+path_resultados='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS'
+crea_carpeta(path_resultados) 
+crea_carpeta('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/factores_de_conversion') 
+crea_carpeta('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+path) 
 
-try:
-    os.mkdir('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+path) 
-    os.mkdir('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+path_resultados) 
-    os.mkdir('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/factores_de_conversion') 
-except OSError as e:
-    if e.errno != errno.EEXIST:
-        raise
         
 tam_cuadros=30
 
@@ -513,7 +530,8 @@ mtx,dist=calibra_camara(tam_cuadros,path_imagenes,path)
 ###
 ##############################################################
 scale_percent=38
-coord_sup_izquierda,coord_sup_derecha,coord_inf_derecha,coord_inf_izquierda,img_patron,dim_resize=deteccion_esquinas(path_imagenes,mtx,dist,scale_percent)
+path_del_tablero='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados/tablero/tablero_esquinas.JPG'
+coord_sup_izquierda,coord_sup_derecha,coord_inf_derecha,coord_inf_izquierda,img_patron,dim_resize=deteccion_esquinas(path_del_tablero,mtx,dist,scale_percent)
 ###############################################################
 ####
 ####
@@ -530,10 +548,10 @@ path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_
 
 #CUANDO LA CAMARA SE INCLINA HACIA ABAJO DEL CERO SE COMPENSA CON -
 #CUANDO LA CAMARA SE INCLINA HACIA ARRIBA DEL CERO SE COMPENSA CON +
-angulo_pitch=0
+# angulo_pitch=20
 #CUANDO LA CAMARA SE INCLINA HACIA LA DERECHA SE COMPENSA CON -
 #CUANDO LA CAMARA SE INCLINA HACIA LA IZQUIERDA SE COMPENSA CON +
-angulo_roll=0
+# angulo_roll=7
 num_res=66666
 #
 #
@@ -541,7 +559,7 @@ num_res=66666
 distancia_en_centimetros_vertical=51
 distancia_en_centimetros_horizontal=27
 area_en_centimetros_cuadrados=distancia_en_centimetros_vertical*distancia_en_centimetros_horizontal
-path_del_tablero='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados/tablero_esquinas.JPG'
+path_del_tablero='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados/tablero/tablero_esquinas.JPG'
 factor_de_conv_lineal_Vertical,factor_de_conv_lineal_Horizontal,factor_de_conv_area,c_x,c_y,M,ancho_IMG,altura_IMG=matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,path_del_tablero,path_resultados,num_res,dim_resize,area_en_centimetros_cuadrados,distancia_en_centimetros_horizontal,distancia_en_centimetros_vertical)
 
 
@@ -558,7 +576,8 @@ y_rr=[]
 x_rr=[]
 imagen_orig=[]
 numero_de_img_transformada=[]
-for finame in imagenes_de_prueba:   
+for finame in imagenes_de_prueba:  
+    angulo_roll,angulo_pitch=leer_txt_y_obtiene_pitch_roll_angs(finame[0:len(finame)-3]+'txt')
     Mr,y_r,x_r=compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,finame,path_resultados,mtx,dist,i,dim_resize,c_x,c_y)
     imagen_orig.append(finame)
     numero_de_img_transformada.append(str(i)+'.jpg')
