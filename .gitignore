@@ -16,5 +16,7 @@
 *.weights
 *.jpeg
 *.JPEG
+*.json
+*.pkl
 yolov4.conv.137
 
