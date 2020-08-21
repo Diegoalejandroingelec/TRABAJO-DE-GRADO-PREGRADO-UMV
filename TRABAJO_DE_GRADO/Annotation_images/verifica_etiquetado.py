@@ -6,7 +6,7 @@ import pandas as pd
 import errno
 import time
 
-def VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica):
+def VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica,path_im_prueba):
     multi_df = pd.read_csv(VoTT_csv)
     #COLOR PARA CLASE 0
     color_0 = (255,0,0)
@@ -23,7 +23,7 @@ def VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica):
         if nombre_de_la_imagen != nombre_de_la_imagen_anterior:
             img = cv2.imread(path_im_prueba+nombre_de_la_imagen[0])
         
-        if clase[0]=='libro_amarillo':
+        if clase[0]=='libro':
             #AZUL
             color=color_0
         if clase[0]=='libro_cerrado':
@@ -63,15 +63,18 @@ def VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica):
                     
         if no_toma_la_imagen==False:
             imagenes_sin_clases_de_interes.append(aux1)
-    
+            
+    print(len(todas_las_images_en_la_carpeta))
+    print(len(imagenes_sin_clases_de_interes))
+    print(len(imagenes_con_clases_de_interes))
     for n in range(len(imagenes_sin_clases_de_interes)):
         img = cv2.imread(path_im_prueba+imagenes_sin_clases_de_interes[n])
         img_g=cv2.resize(img,(1000,700))
         cv2.imwrite(os.path.join(path_resultado_de_verifica,imagenes_sin_clases_de_interes[n]),img_g)
 
-path_im_prueba='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/'
+path_im_prueba='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/resultados/'
 
-VoTT_csv='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/libros_2-export.csv'
+VoTT_csv='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/vott-csv-export/test_libros2.0-export.csv'
 path_resultado_de_verifica='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/verifica_etiquetado'
 try:
     os.mkdir(path_resultado_de_verifica) 
@@ -79,7 +82,7 @@ except OSError as e:
     if e.errno != errno.EEXIST:
         raise
 tmstmp1 = time.time()
-VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica)   
+VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica,path_im_prueba)   
 tmstmp2 = time.time()
 print('Total time elapsed = ', tmstmp2 - tmstmp1)
 
