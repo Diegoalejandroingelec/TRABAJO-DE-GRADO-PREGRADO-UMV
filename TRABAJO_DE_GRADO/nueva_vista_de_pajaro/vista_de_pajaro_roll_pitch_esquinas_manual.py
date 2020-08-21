@@ -6,6 +6,26 @@ import math
 import pickle
 import time
 import errno
+def corregir_recorte_imagen(y,y_menor,x,x_mayor,AN_AL):
+    if y<0:
+        y=0
+    else:
+        y=y
+    if y_menor>AN_AL[1]:
+        y_menor=AN_AL[1]
+    else:
+        y_menor=y_menor
+    if x<0:
+        x=0
+    else:
+        x=x
+    if x_mayor>AN_AL[0]:
+        x_mayor=AN_AL[0]
+    else:
+        x_mayor=x_mayor
+    return y,y_menor,x,x_mayor
+    
+    
 ###############################################################
 ####
 ####
@@ -54,7 +74,7 @@ def coordenadas_en_vista_de_pajaro(M,x_1,y_1):
 ####               PARA EL TABLERO CON LAS ESQUINAS
 ####
 ###############################################################
-def matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,path_del_tablero,path_resultados,num_res,dim_resize):
+def matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,path_del_tablero,path_resultados,num_res,dim_resize,area_en_centimetros_cuadrados,distancia_en_centimetros_horizontal,distancia_en_centimetros_vertical):
     img_patron=cv2.imread(path_del_tablero)
     #print(img_patron.shape)
     cols=distancia(coord_sup_izquierda,coord_sup_derecha)
@@ -161,11 +181,11 @@ def matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_in
     
     vertical_d=distancia([bias_X,bias_Y],[bias_X,rows+bias_Y])
     horizontal_d=distancia([bias_X,bias_Y],[cols+bias_X,bias_Y])
-    factor_de_conv_lineal_Vertical=51/vertical_d
-    factor_de_conv_lineal_Horizontal=27/horizontal_d
+    factor_de_conv_lineal_Vertical=distancia_en_centimetros_vertical/vertical_d
+    factor_de_conv_lineal_Horizontal=distancia_en_centimetros_horizontal/horizontal_d
     
     area_en_pixeles=vertical_d*horizontal_d
-    factor_de_conv_area=1377/area_en_pixeles
+    factor_de_conv_area=area_en_centimetros_cuadrados/area_en_pixeles
     return factor_de_conv_lineal_Vertical,factor_de_conv_lineal_Horizontal,factor_de_conv_area
     
 ###############################################################
@@ -180,8 +200,7 @@ def matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_in
 
 
 
-def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,img_patron,path_resultados,num_res,dim_resize,angulo_roll,coordenada_ini,coordenada_finn):
-    #img_patron=cv2.resize(img_patron, dim_resize)
+def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,img_patron,path_resultados,num_res,dim_resize,angulo_roll,coordenada_ini,coordenada_finn,al,an):
 
     cols=distancia(coord_sup_izquierda,coord_sup_derecha)
     rows=distancia(coord_inf_izquierda,coord_sup_izquierda)
@@ -195,6 +214,10 @@ def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquie
     M = cv2.getPerspectiveTransform(pts2,pts1)
     transf_bird_eye = cv2.warpPerspective(img_patron,M,(ancho_IMG,altura_IMG),flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
     
+    # mostrarrrr=cv2.resize(transf_bird_eye  ,dim_resize)
+    # cv2.imshow('IMAGEN ORIGINAL',mostrarrrr)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     
     
     #CÁLCULO DE LA UBICACIÓN DE LAS COORDENADAS LÍMITES SUPERIOR IZQUIERDA Y SUPERIOR DERECHA DE LA IMÁGEN ORIGINAL
@@ -222,6 +245,11 @@ def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquie
     
     transf_bird_eye=transf_bird_eye[y:y+h, :]
     
+    # mostrarrrr=cv2.resize(transf_bird_eye  ,dim_resize)
+    # cv2.imshow('IMAGEN ORIGINAL',mostrarrrr)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    
     flag_10=0
     flag_11=0
     for i in range(transf_bird_eye.shape[1]):         
@@ -235,11 +263,33 @@ def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquie
             flag_11=1
         if flag_10==1 and flag_11==1:
             break
-    transf_bird_eye=transf_bird_eye[:, coordenada_ini:coordenada_finn]    
+    transf_bird_eye=transf_bird_eye[:, coordenada_ini:coordenada_finn]
+    
     # mostrarrrr=cv2.resize(transf_bird_eye  ,dim_resize)
     # cv2.imshow('IMAGEN ORIGINAL',mostrarrrr)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
+    
+    alto,ancho=transf_bird_eye.shape[0],transf_bird_eye.shape[1]
+    
+    
+    pixeles_por_quitar=ancho-an
+    if pixeles_por_quitar<0:
+        x_i=0
+        x_f=an
+    else:
+        x_i=pixeles_por_quitar//2
+        x_f=ancho-x_i
+    y_i=alto-al
+    
+    transf_bird_eye=transf_bird_eye[y_i:y_i+al,x_i:x_f]
+   
+    # transf_bird_eye=cv2.resize(transf_bird_eye  ,(an,al))
+    # mostrarrrr=cv2.resize(transf_bird_eye  ,dim_resize)
+    # cv2.imshow('IMAGEN ORIGINAL',mostrarrrr)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    
     flag_10=0
     flag_11=0
     for i in range(transf_bird_eye.shape[1]):         
@@ -254,17 +304,20 @@ def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquie
         if flag_10==1 and flag_11==1:
             break
 
-    # mostrarrrr=cv2.resize(transf_bird_eye  ,dim_resize)
-    # cv2.imshow('IMAGEN ORIGINAL',mostrarrrr)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
     
     pi=math.pi
     roll=(-angulo_roll*pi)/180
     My=np.array([[math.cos(roll),0,math.sin(roll)],[0,1,0],[-math.sin(roll),0,math.cos(roll)]])
-    
-    bias_XX=7500
-    bias_YY=6000
+    if angulo_roll==0:
+        bias_XX=5000
+        bias_YY=5000
+    if angulo_roll>0:
+        bias_XX=1000
+        bias_YY=6000
+    if angulo_roll<0:
+       bias_XX=9000
+       bias_YY=6000 
+       
     AN_AL=(15000,10000)
     fy,fx= mtx[1][1],mtx[0][0]
     Krc=mtx
@@ -276,7 +329,7 @@ def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquie
     M_comp=My
     
     Mr=np.dot(np.dot(Krc,M_comp),Kvc_m1)
-    
+
     transf_bird_eye_roll = cv2.warpPerspective(transf_bird_eye,Mr,AN_AL,flags=cv2.INTER_LINEAR+cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
     
     
@@ -303,7 +356,6 @@ def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquie
         y_menor=limites_imagen[3][1]
     if limites_imagen[2][1]==limites_imagen[3][1]:
         y_menor=limites_imagen[3][1]
-    h=y_menor-y
 
     if limites_imagen[0][0]<limites_imagen[1][0]:
         x=limites_imagen[0][0]
@@ -311,7 +363,12 @@ def matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquie
     if limites_imagen[0][0]>limites_imagen[1][0]:
         x=limites_imagen[1][0]
         x_mayor=limites_imagen[0][0]
+    
+    y,y_menor,x,x_mayor=corregir_recorte_imagen(y,y_menor,x,x_mayor,AN_AL)
+    
+    h=y_menor-y
     w=x_mayor-x
+    
     transf_bird_eye_roll=transf_bird_eye_roll[y:y+h, x:x+w]
     
     
@@ -379,8 +436,7 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
     Mr=np.dot(np.dot(Krc,M_comp),Kvc_m1)
     
     transf_bird_eye = cv2.warpPerspective(img_patron,Mr,AN_AL,flags=cv2.INTER_LINEAR+cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
-    #cv2.imshow('BIRD EYE TRANSFORM_1',transf_bird_eye)
-    #cv2.waitKey(0)
+
     # mostrarrrr=cv2.resize(transf_bird_eye  ,dim_resize)
     # cv2.imshow('IMAGEN ORIGINAL',mostrarrrr)
     # cv2.waitKey(0)
@@ -406,15 +462,17 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
         y_menor=limites_imagen[3][1]
     if limites_imagen[2][1]==limites_imagen[3][1]:
         y_menor=limites_imagen[3][1]
-    h=y_menor-y
-
     if limites_imagen[0][0]<limites_imagen[1][0]:
         x=limites_imagen[0][0]
         x_mayor=limites_imagen[1][0]
     if limites_imagen[0][0]>limites_imagen[1][0]:
         x=limites_imagen[1][0]
-        x_mayor=limites_imagen[0][0]
+        x_mayor=limites_imagen[0][0]   
+    y,y_menor,x,x_mayor=corregir_recorte_imagen(y,y_menor,x,x_mayor,AN_AL)
+    
+    h=y_menor-y
     w=x_mayor-x
+    
     transf_bird_eye=transf_bird_eye[y:y+h, x:x+w]
     
     # mostrarrrr=cv2.resize(transf_bird_eye  ,dim_resize)
@@ -438,7 +496,7 @@ def compensa_por_movimiento(coord_sup_izquierda,coord_sup_derecha,coord_inf_izqu
         if flag_10==1 and flag_11==1:
             break
         
-    matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,transf_bird_eye,path_resultados,num_res,dim_resize,angulo_roll,coordenada_ini,coordenada_finn)
+    matriz_de_homeografia(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,transf_bird_eye,path_resultados,num_res,dim_resize,angulo_roll,coordenada_ini,coordenada_finn,al,an)
     
 
 
@@ -609,16 +667,22 @@ tmstmp1 = time.time()
 imagenes_a_x_grados=66
 path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
 
-#
-#
-angulo_pitch=30
-angulo_roll=-30
+
+#CUANDO LA CAMARA SE INCLINA HACIA ABAJO DEL CERO SE COMPENSA CON -
+#CUANDO LA CAMARA SE INCLINA HACIA ARRIBA DEL CERO SE COMPENSA CON +
+angulo_pitch=0
+#CUANDO LA CAMARA SE INCLINA HACIA LA DERECHA SE COMPENSA CON -
+#CUANDO LA CAMARA SE INCLINA HACIA LA IZQUIERDA SE COMPENSA CON +
+angulo_roll=0
 num_res=66666
 #
 #
 #
+distancia_en_centimetros_vertical=51
+distancia_en_centimetros_horizontal=27
+area_en_centimetros_cuadrados=distancia_en_centimetros_vertical*distancia_en_centimetros_horizontal
 path_del_tablero='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados/tablero_esquinas.JPG'
-factor_de_conv_lineal_Vertical,factor_de_conv_lineal_Horizontal,factor_de_conv_area=matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,path_del_tablero,path_resultados,num_res,dim_resize)
+factor_de_conv_lineal_Vertical,factor_de_conv_lineal_Horizontal,factor_de_conv_area=matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,path_del_tablero,path_resultados,num_res,dim_resize,area_en_centimetros_cuadrados,distancia_en_centimetros_horizontal,distancia_en_centimetros_vertical)
 
 
 
