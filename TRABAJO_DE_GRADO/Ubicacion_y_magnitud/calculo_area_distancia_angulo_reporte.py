@@ -87,26 +87,27 @@ Distancia_estimada=[]
 angulo=[]
 
 for n_imagen_detectada in range(len(detection_images)):
-    name_image=detection_images[n_imagen_detectada]['image_name']
-    img=cv2.imread(name_image,1)
-    punto_central=PUNTO_CENTRAL_INI_CAMPO_VISUAL(img)
-    for detections_in_one_image in range(len(detection_images[n_imagen_detectada]['detections'])):
-        name_image_List.append(name_image)
-        label.append(detection_images[n_imagen_detectada]['detections'][detections_in_one_image][0])
-        confidence=detection_images[n_imagen_detectada]['detections'][detections_in_one_image][1]
-        datos_del_recuadro=detection_images[n_imagen_detectada]['detections'][detections_in_one_image][2]
-        area_pixeles=datos_del_recuadro[2]*datos_del_recuadro[3]
-        cateto_opuesto=punto_central[0]-int(datos_del_recuadro[0])
-        cateto_adyasente=punto_central[1]-int(datos_del_recuadro[1])
-        
-        angulo.append(obtener_angulo(cateto_opuesto,cateto_adyasente))
-        
-        area_estimada.append(area_pixeles*factor_de_conv_area)
-        
-        cateto_adyasente_unidades_del_mundo=factor_de_conv_lineal_Vertical*cateto_adyasente
-        cateto_opuesto_unidades_del_mundo=factor_de_conv_lineal_Horizontal*cateto_opuesto
-        
-        Distancia_estimada.append(math.sqrt(cateto_opuesto_unidades_del_mundo**2+cateto_adyasente_unidades_del_mundo**2))
+    if not not detection_images[n_imagen_detectada]['detections']:
+        name_image=detection_images[n_imagen_detectada]['image_name']
+        img=cv2.imread(name_image,1)
+        punto_central=PUNTO_CENTRAL_INI_CAMPO_VISUAL(img)
+        for detections_in_one_image in range(len(detection_images[n_imagen_detectada]['detections'])):
+            name_image_List.append(name_image)
+            label.append(detection_images[n_imagen_detectada]['detections'][detections_in_one_image][0])
+            confidence=detection_images[n_imagen_detectada]['detections'][detections_in_one_image][1]
+            datos_del_recuadro=detection_images[n_imagen_detectada]['detections'][detections_in_one_image][2]
+            area_pixeles=datos_del_recuadro[2]*datos_del_recuadro[3]
+            cateto_opuesto=punto_central[0]-int(datos_del_recuadro[0])
+            cateto_adyasente=punto_central[1]-int(datos_del_recuadro[1])
+            
+            angulo.append(obtener_angulo(cateto_opuesto,cateto_adyasente))
+            
+            area_estimada.append(area_pixeles*factor_de_conv_area)
+            
+            cateto_adyasente_unidades_del_mundo=factor_de_conv_lineal_Vertical*cateto_adyasente
+            cateto_opuesto_unidades_del_mundo=factor_de_conv_lineal_Horizontal*cateto_opuesto
+            
+            Distancia_estimada.append(math.sqrt(cateto_opuesto_unidades_del_mundo**2+cateto_adyasente_unidades_del_mundo**2))
 
 
 data = {'PATH IMAGEN':name_image_List,
