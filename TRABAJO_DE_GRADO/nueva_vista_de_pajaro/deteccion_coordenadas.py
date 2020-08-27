@@ -19,7 +19,7 @@ def pnt1 (event,x,y,flags,param):
         print('x= '+str(x)+ ', y= '+ str(y))
 
 def deteccion_esquinas(path_imagenes,scale_percent=38):
-    refpnt=[]
+    #refpnt=[]
     img_patron = cv2.imread(path_imagenes)
     #cv2.imshow('IMAGEN ORIGINAL',img_patron)
     #cv2.waitKey(0)
@@ -54,8 +54,5 @@ def deteccion_esquinas(path_imagenes,scale_percent=38):
     return coord_sup_izquierda,coord_sup_derecha,coord_inf_derecha,coord_inf_izquierda,img_patron,dim
 
 scale_percent=30
-path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS_1234/0.jpg'
-coord_sup_izquierda,coord_sup_derecha,coord_inf_derecha,coord_inf_izquierda,img_patron,dim_resize=deteccion_esquinas(path_imagenes,scale_percent)
-scale_percent=30
-path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS_1234/66666.jpg'
+path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS/66666.jpg'
 coord_sup_izquierda1,coord_sup_derecha1,coord_inf_derecha1,coord_inf_izquierda1,img_patron1,dim_resize1=deteccion_esquinas(path_imagenes,scale_percent)

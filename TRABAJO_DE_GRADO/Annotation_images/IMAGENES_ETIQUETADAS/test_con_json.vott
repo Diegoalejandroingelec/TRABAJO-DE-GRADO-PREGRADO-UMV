@@ -1,0 +1,101 @@
+{
+    "name": "test_con_json",
+    "securityToken": "test_con_json Token",
+    "sourceConnection": {
+        "name": "imagenes_transformadas",
+        "providerType": "localFileSystemProxy",
+        "providerOptions": {
+            "encrypted": "eyJjaXBoZXJ0ZXh0IjoiYjE1YTJiNDNlMGJhZDEwM2E3ZDdmOWRjOGNmOTI0NDZmZWQxNGFhNDBlYjNkODUzMmZhMjIxYTFmMTQxYzFkMTg2ZDkyNTU2MzhjZjUxZWE2NzRlY2IyOTk3ODAxZGQ0YzczOTg2YTRhZTYyMDcyZjFmODM3YzMwZTI1ZmFiMzFkMjQ0NTVhY2U2MjYwN2E4ZDE0NDg1MTQ2ZmQ4MzVkZGI3NmIzODQ4NDMwYTgxNjEyYTczOWFhY2I2MGZkMTI2Y2U1YTk0MTFjNzc3YTc0NGI0N2FlMzE0NTc1MGYyYTUiLCJpdiI6IjM5Y2JkNmU5YjUxMTY0YmY5YjNjYzVjNDY5ZWM1YTkzOTU2OTA5ZDM2NmY4ZDk3ZCJ9"
+        },
+        "id": "LJ6FQmLnu"
+    },
+    "targetConnection": {
+        "name": "imagenes_etiquetadas",
+        "providerType": "localFileSystemProxy",
+        "providerOptions": {
+            "encrypted": "eyJjaXBoZXJ0ZXh0IjoiYWIzMDJjYWUwZWM4ZGU3OWFkYTNkNTBmMTc0ODU2M2FiYjI1ZTFhOGI0N2I3OWFlNzMxMjU4N2JiMDQ4NzVhOWI0NWQxZWE4OGI1MzRjMDljYjdmNzc1ZTcwNWZkMzViMjQ2YzYzZWZhMzU3NWEwMDZmYjkwMTYzZGEwNjkyZWExZjE4ZjE5MmE0ZjNmZjNlMzgxMjI5OTMyMWU3YTI2YWY0YTJlN2Y4ZDA0MjRlNWExNTZiY2ZkOGRkYThkMDgyYzBmOGVmYjNiMGQ3ODExNmQxZjYxNjViZTk1NTg1NWNiY2VlMDRiY2I0MDA4N2UwMzllZDA4MzUwYzQ0OGE4ZSIsIml2IjoiY2UxMzA4MmMzZmEyZDFlMWMwYWIyMmVkYzMxZmVjOGI2YTBlYTRlZDYyYzM2ZGMxIn0="
+        },
+        "id": "cqD3V6N38"
+    },
+    "videoSettings": {
+        "frameExtractionRate": 15
+    },
+    "tags": [
+        {
+            "name": "CLASE_1",
+            "color": "#008080"
+        },
+        {
+            "name": "CLASE_2",
+            "color": "#800080"
+        },
+        {
+            "name": "CLASE_3",
+            "color": "#FF0000"
+        }
+    ],
+    "id": "yqVIni9kL",
+    "activeLearningSettings": {
+        "autoDetect": false,
+        "predictTag": true,
+        "modelPathType": "coco"
+    },
+    "exportFormat": {
+        "providerType": "csv",
+        "providerOptions": {
+            "encrypted": "eyJjaXBoZXJ0ZXh0IjoiMTNmOThiZDJiMjg4ODA5Mjg1OGNjNWNhNTRhYzdiNzE2OTlmZGZkNzU2ZmQ4YzRhYWQzZjM5Y2VlMDExMzNhMGRiMDVlODdhNGI5MTQ1YmYxNmQxN2UxN2ZlZDJiMTI1IiwiaXYiOiIyZDg3OTljNTk3OTg4MmJlOTMwZGI0NTZjNzc4MzlmNzNmZGEwODEwOTJkNTBkNDkifQ=="
+        }
+    },
+    "version": "2.2.0",
+    "lastVisitedAssetId": "e6102217603b23638ac298400d4e95d0",
+    "assets": {
+        "2649cf2ad38a66a1ee1eee7582be108b": {
+            "format": "jpg",
+            "id": "2649cf2ad38a66a1ee1eee7582be108b",
+            "name": "0.jpg",
+            "path": "file:/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS/0.jpg",
+            "size": {
+                "width": 6477,
+                "height": 2222
+            },
+            "state": 2,
+            "type": 1
+        },
+        "9c24004408cca672a0892dcf2a7f15f2": {
+            "format": "jpg",
+            "id": "9c24004408cca672a0892dcf2a7f15f2",
+            "name": "1.jpg",
+            "path": "file:/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS/1.jpg",
+            "size": {
+                "width": 6477,
+                "height": 2222
+            },
+            "state": 2,
+            "type": 1
+        },
+        "11cc197840bd24297d332a14483af1e4": {
+            "format": "jpg",
+            "id": "11cc197840bd24297d332a14483af1e4",
+            "name": "2.jpg",
+            "path": "file:/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS/2.jpg",
+            "size": {
+                "width": 6477,
+                "height": 2222
+            },
+            "state": 2,
+            "type": 1
+        },
+        "e6102217603b23638ac298400d4e95d0": {
+            "format": "jpg",
+            "id": "e6102217603b23638ac298400d4e95d0",
+            "name": "3.jpg",
+            "path": "file:/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS/3.jpg",
+            "size": {
+                "width": 6477,
+                "height": 2222
+            },
+            "state": 2,
+            "type": 1
+        }
+    }
+}

@@ -1,0 +1,101 @@
+{
+    "name": "IMAGENES_ORIGINALES",
+    "securityToken": "IMAGENES_ORIGINALES Token",
+    "sourceConnection": {
+        "name": "IMG_O",
+        "providerType": "localFileSystemProxy",
+        "providerOptions": {
+            "encrypted": "eyJjaXBoZXJ0ZXh0IjoiNGQxZGFmYmMwYTA4ODA2ZjM0ZjA2MGI1NTYzZTM0ODMwYTg3MmNmYzhiOTk4ZjkxMjNlYWNmOTk1M2U3MmRkOTYxNDZhMDQxNTg0MTM4NmQ3YTRkODM3NmFlYWE4ZTAwMWVlYTJmYWZjMjEwYTkwYWM4MThmNDhiNzJiOWU2ZmQ4ZjhkNTQ0YmQ5MjVkYWQxNDQyMDMzMGUyZThkMGIxZTdmN2RmYWU0NDEwZTMxNjE5NTZmZDM4NGU0YmE2NTBmMDEyMWNlNzBmYzdhNjJiMjg4OTIyMjhkMjQwNTEyOTgiLCJpdiI6IjZiNjcxNmU1MmMyZDU0YzU5YzQ5OGVhN2QzNjNiNjE0NjE0NTgxN2E1NzVmZmExYiJ9"
+        },
+        "id": "hcaDDG0YG"
+    },
+    "targetConnection": {
+        "name": "IMAGENES_O_ETIQUE",
+        "providerType": "localFileSystemProxy",
+        "providerOptions": {
+            "encrypted": "eyJjaXBoZXJ0ZXh0IjoiNjA5NTNlNjUzMmI0MzA1N2RiNGRkYjI2NThhN2MyZmIzYzhmMjRlOTEyM2I2ZjNjOWFhMjc4MDUyYjQxYzNlOWE0ZmEzNmVmNjY5NTdiZjM1NTAyMzJhZWY0NDMxNmJlODIyODg0ZDk5YjBlY2NlNGIyZjgyYjEwZjdkYjI3MmI3MGY0Yjk1MmQ3NmFlMWI3MzVmYzcyZWVlY2Y2OGMxM2NhNTY3MzFkZGU1NzBhYWQyNTVlYmIwMmRhMWIxNGI1ZjU5ODNlNjVlOTA2NTBiMTc3YmE3Y2NlZDVmM2NjYmM1YjZjY2VhYzViNzQ1OGE5NGRmYjMzZTA1YjFlMGIyOSIsIml2IjoiNDhlNmVmMzVhNmU2MmE2MzZjZWI4ZGZkNTdmYTM2ZDUzMDZlM2UxODkzOWRmMWE5In0="
+        },
+        "id": "KFf2YgURb"
+    },
+    "videoSettings": {
+        "frameExtractionRate": 15
+    },
+    "tags": [
+        {
+            "name": "CLASE_1",
+            "color": "#808000"
+        },
+        {
+            "name": "CLASE_2",
+            "color": "#FFFF00"
+        },
+        {
+            "name": "CLASE_3",
+            "color": "#808000"
+        }
+    ],
+    "id": "fowk_UuOz",
+    "activeLearningSettings": {
+        "autoDetect": false,
+        "predictTag": true,
+        "modelPathType": "coco"
+    },
+    "exportFormat": {
+        "providerType": "vottJson",
+        "providerOptions": {
+            "encrypted": "eyJjaXBoZXJ0ZXh0IjoiNWZhNDQ0YzM3OTQ4NjVmZDUwZTVjNmI1ZDZhZGE4YmQxOGY0NzVmNTczOGFiZTMzNDg3ZmI2NmExYTA5ZGU3ZmViOTdjMWFkYmZlNzIzMGI0ZjIzN2I3ODFhNjc3NGNkIiwiaXYiOiI1NTJjYTNmOTJjNjE5ZjljYzJjYTYyZGY5Mzc1OTVkNzVjMjljMmYyYTVjZjAxNmMifQ=="
+        }
+    },
+    "version": "2.2.0",
+    "lastVisitedAssetId": "ef6f865993a0a44aed92efb8c6cec8ef",
+    "assets": {
+        "dafc5ff101b47b2e205841cebd0b4789": {
+            "format": "jpg",
+            "id": "dafc5ff101b47b2e205841cebd0b4789",
+            "name": "imagen_1.JPG",
+            "path": "file:/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/66_grados/imagen_1.JPG",
+            "size": {
+                "width": 4608,
+                "height": 2592
+            },
+            "state": 2,
+            "type": 1
+        },
+        "c59899fd68ded116f31d7c654d87cc42": {
+            "format": "jpg",
+            "id": "c59899fd68ded116f31d7c654d87cc42",
+            "name": "imagen_2.JPG",
+            "path": "file:/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/66_grados/imagen_2.JPG",
+            "size": {
+                "width": 4608,
+                "height": 2592
+            },
+            "state": 1,
+            "type": 1
+        },
+        "a074cae00639937835f4678f9ee6c312": {
+            "format": "jpg",
+            "id": "a074cae00639937835f4678f9ee6c312",
+            "name": "imagen_3.JPG",
+            "path": "file:/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/66_grados/imagen_3.JPG",
+            "size": {
+                "width": 4608,
+                "height": 2592
+            },
+            "state": 1,
+            "type": 1
+        },
+        "ef6f865993a0a44aed92efb8c6cec8ef": {
+            "format": "jpg",
+            "id": "ef6f865993a0a44aed92efb8c6cec8ef",
+            "name": "imagen_4.JPG",
+            "path": "file:/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/66_grados/imagen_4.JPG",
+            "size": {
+                "width": 4608,
+                "height": 2592
+            },
+            "state": 2,
+            "type": 1
+        }
+    }
+}

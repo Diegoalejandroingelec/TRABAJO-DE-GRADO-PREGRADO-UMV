@@ -2,5 +2,5 @@ classes= 1
 train  = /home/diego/UNIVERSIDAD/experimento_YOLO_LIBROS/Annotation_images/train.txt
 valid  = /home/diego/UNIVERSIDAD/experimento_YOLO_LIBROS/Annotation_images/test.txt
 names =/home/diego/UNIVERSIDAD/TRABAJO_DE_GRADO/darknet/data/libros.names
-backup = /home/diego/UNIVERSIDAD/darknet/backup
+backup = /home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/backup
 

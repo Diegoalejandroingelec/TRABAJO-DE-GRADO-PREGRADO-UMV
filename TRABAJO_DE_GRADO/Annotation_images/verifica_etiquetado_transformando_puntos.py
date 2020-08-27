@@ -33,7 +33,7 @@ def corrige_cordenadas_que_no_existen(tam_imagen,coordenada_calculada):
     
     return coordenada_calculada
 
-def VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica,path_im_prueba,Mr,M,y_r,x_r,path_img_orig,nombre_de_la_imagen_transf):
+def VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica,Mr,M,y_r,x_r,path_img_orig,nombre_de_la_imagen_transf):
     multi_df = pd.read_csv(VoTT_csv)
     #COLOR PARA CLASE 0
     color_0 = (255,0,0)
@@ -74,17 +74,17 @@ def VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica,path_im_prueba,Mr,M,
         x_max.append(info_xymax_transformado[0])
         y_max.append(info_xymax_transformado[1])
         
-        if clase[0]=='libro':
+        if clase[0]=='CLASE_1':
             #AZUL
             color=color_0
-        if clase[0]=='libro_cerrado':
+        if clase[0]=='CLASE_2':
             #VERDE
             color=color_1
-        if clase[0]=='libro_abierto':
+        if clase[0]=='CLASE_3':
             #ROJO
             color=color_2                           
         cv2.rectangle(img, (int(info_xymin_transformado[0]), int(info_xymin_transformado[1])),(int(info_xymax_transformado[0]), int(info_xymax_transformado[1])), color, 8)
-        cv2.putText(img, clase[0], (int(info_xymin_transformado[0]), int(info_xymin_transformado[1])-30), cv2.FONT_HERSHEY_SIMPLEX, 3, color, 4)
+        cv2.putText(img, clase[0], (int(info_xymin_transformado[0]), int(info_xymin_transformado[1])+70), cv2.FONT_HERSHEY_SIMPLEX, 3, color, 4)
         nombre_de_la_imagen_anterior=nombre_de_la_imagen
         
         img_g=cv2.resize(img,(1000,700))
@@ -107,9 +107,15 @@ def load_obj(name ):
        
 data_matrices_de_transfo=load_obj('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/factores_de_conversion/info_de_matrices_de_homeografia.pkl') 
 
-path_im_prueba='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/resultados/'
 
-VoTT_csv='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/vott-csv-export/test_libros2.0-export.csv'
+
+
+
+
+
+
+
+VoTT_csv='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/IMAGENES_ETIQUETADAS/vott-csv-export/test_con_json-export.csv'
 path_resultado_de_verifica='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/verifica_etiquetado'
 try:
     os.mkdir(path_resultado_de_verifica) 
@@ -127,7 +133,7 @@ nombre_de_la_imagen_transf=data_matrices_de_transfo['numero_img_transf']
 
 
 tmstmp1 = time.time()
-VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica,path_im_prueba,Mr,M,y_r,x_r,path_img_orig,nombre_de_la_imagen_transf)   
+VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica,Mr,M,y_r,x_r,path_img_orig,nombre_de_la_imagen_transf)   
 tmstmp2 = time.time()
 print('Total time elapsed = ', tmstmp2 - tmstmp1)
 

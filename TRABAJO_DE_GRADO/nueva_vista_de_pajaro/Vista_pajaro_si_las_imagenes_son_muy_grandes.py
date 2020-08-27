@@ -94,8 +94,9 @@ def coordenadas_en_vista_original_total(Mr,M,y_r,x_r,y_m,x_m,p_x,p_y):
 ####               PARA EL TABLERO CON LAS ESQUINAS
 ####
 ###############################################################
-def matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,path_del_tablero,path_resultados,num_res,dim_resize,area_en_centimetros_cuadrados,distancia_en_centimetros_horizontal,distancia_en_centimetros_vertical):
+def matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,path_del_tablero,path_resultados,num_res,dim_resize,area_en_centimetros_cuadrados,distancia_en_centimetros_horizontal,distancia_en_centimetros_vertical,dim_orig):
     img_patron=cv2.imread(path_del_tablero)
+    img_patron=cv2.resize(img_patron  ,dim_orig)
     img_patron=undistorted_images(img_patron,mtx,dist)
     #print(img_patron.shape)
     cols=distancia(coord_sup_izquierda,coord_sup_derecha)
@@ -255,7 +256,7 @@ def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,ang
     Krc=np.array([[mtx[0][0],mtx[0][1], c_x],
             [ mtx[1][0], mtx[1][1], c_y],
             [ mtx[2][0], mtx[2][1],mtx[2][2]]])
-    # print(c_x,c_y)
+    
     
     Kvc=np.array([[fx,   0.        , bias_XX],
             [  0.        , fy, bias_YY],
@@ -336,9 +337,9 @@ def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,ang
 ###############################################################
 
 
-def compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,path_imagenes,path_resultados,mtx,dist,num_res,dim_resize,c_x,c_y):
+def compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,path_imagenes,path_resultados,mtx,dist,num_res,dim_resize,c_x,c_y,dim_orig):
     img_patron = cv2.imread(path_imagenes)
-    
+    img_patron=cv2.resize(img_patron  ,dim_orig)
     # mostrarrrr=cv2.resize(img_patron  ,dim_resize)
     # cv2.imshow('IMAGEN ORIGINAL',mostrarrrr)
     # cv2.waitKey(0)
@@ -352,9 +353,7 @@ def compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,path
     # cv2.destroyAllWindows()  
    
     transf_bird_eye = cv2.warpPerspective(img_patron,M,(ancho_IMG,altura_IMG),flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
-    # c_t_xy=coordenadas_en_vista_de_pajaro(M,mtx[0,2],mtx[1,2])
-    # print('punto principal transformado')
-    # print(c_t_xy)
+    
     # mostrarrrr=cv2.resize(transf_bird_eye,dim_resize)
     # cv2.imshow('IMAGEN ORIGINAL',mostrarrrr)
     # cv2.waitKey(0)
@@ -397,10 +396,13 @@ def pnt1 (event,x,y,flags,param):
         refpnt.append([x,y])
         print('x= '+str(x)+ ', y= '+ str(y))
 
-def deteccion_esquinas(path_imagenes,mtx,dist,scale_percent=38):
+def deteccion_esquinas(path_imagenes,mtx,dist,dim_orig,scale_percent=38):
     img_patron = cv2.imread(path_imagenes)
     #cv2.imshow('IMAGEN ORIGINAL',img_patron)
     #cv2.waitKey(0)
+    print(img_patron.shape[0],img_patron.shape[1])
+    img_patron=cv2.resize(img_patron  ,dim_orig)
+    print(img_patron.shape[0],img_patron.shape[1])
     img_patron=undistorted_images(img_patron,mtx,dist)
     width_original=img_patron.shape[1]
     height_original=img_patron.shape[0]
@@ -461,6 +463,15 @@ def calibra_camara(tam_cuadros,path_imagenes,path):
     i=0
     for fname in images:
       img = cv2.imread(fname)
+      scale_percent=38
+      width = int(img.shape[1] * scale_percent / 100)
+      height = int(img.shape[0] * scale_percent / 100)
+      dim = (width, height)
+      # print(dim)
+      #cv2.imshow('IMAGEN ORIGINAL SIN DISTORSION POR CAMARA',img_patron)
+      #cv2.waitKey(0)
+      img=cv2.resize(img  , dim)
+      dim_orig=dim
       gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
       # Encuentra las esquinas del tablero de ajedrez
       ret, corners = cv2.findChessboardCorners(gray, (puntos_horizontales,puntos_verticales),flags=cv2.CALIB_CB_ADAPTIVE_THRESH+cv2.CALIB_CB_NORMALIZE_IMAGE)
@@ -485,6 +496,7 @@ def calibra_camara(tam_cuadros,path_imagenes,path):
     i=0
     for fname in images:
         img = cv2.imread(fname)
+        img=cv2.resize(img, dim)
         dst = undistorted_images(img,mtx,dist)
         
         #cv2.imshow("undistorted", dst),cv2.waitKey(50)
@@ -500,7 +512,7 @@ def calibra_camara(tam_cuadros,path_imagenes,path):
       error = cv2.norm(imgpoints[i],imgpoints2, cv2.NORM_L2)/len(imgpoints2) 
       tot_error += error 
     print( "Error de reproyección total: ", tot_error, 'píxeles') 
-    return mtx,dist
+    return mtx,dist,dim_orig
 
 def save_obj(obj, name ):
     with open('factores_de_conversion/'+ name + '.pkl', 'wb') as f:
@@ -523,7 +535,8 @@ crea_carpeta('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_v
         
 tam_cuadros=30
 
-mtx,dist=calibra_camara(tam_cuadros,path_imagenes,path)
+mtx,dist,dim_orig=calibra_camara(tam_cuadros,path_imagenes,path)
+
 ##############################################################
 ###
 ###
@@ -531,9 +544,9 @@ mtx,dist=calibra_camara(tam_cuadros,path_imagenes,path)
 ###
 ###
 ##############################################################
-scale_percent=38
+scale_percent=100
 path_del_tablero='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados/tablero/tablero_esquinas.JPG'
-coord_sup_izquierda,coord_sup_derecha,coord_inf_derecha,coord_inf_izquierda,img_patron,dim_resize=deteccion_esquinas(path_del_tablero,mtx,dist,scale_percent)
+coord_sup_izquierda,coord_sup_derecha,coord_inf_derecha,coord_inf_izquierda,img_patron,dim_resize=deteccion_esquinas(path_del_tablero,mtx,dist,dim_orig,scale_percent)
 ###############################################################
 ####
 ####
@@ -558,11 +571,11 @@ num_res=66666
 #
 #
 #
-distancia_en_centimetros_vertical=400
-distancia_en_centimetros_horizontal=300
+distancia_en_centimetros_vertical=51
+distancia_en_centimetros_horizontal=27
 area_en_centimetros_cuadrados=distancia_en_centimetros_vertical*distancia_en_centimetros_horizontal
 path_del_tablero='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados/tablero/tablero_esquinas.JPG'
-factor_de_conv_lineal_Vertical,factor_de_conv_lineal_Horizontal,factor_de_conv_area,c_x,c_y,M,ancho_IMG,altura_IMG=matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,path_del_tablero,path_resultados,num_res,dim_resize,area_en_centimetros_cuadrados,distancia_en_centimetros_horizontal,distancia_en_centimetros_vertical)
+factor_de_conv_lineal_Vertical,factor_de_conv_lineal_Horizontal,factor_de_conv_area,c_x,c_y,M,ancho_IMG,altura_IMG=matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,path_del_tablero,path_resultados,num_res,dim_resize,area_en_centimetros_cuadrados,distancia_en_centimetros_horizontal,distancia_en_centimetros_vertical,dim_orig)
 
 
 
@@ -580,7 +593,7 @@ imagen_orig=[]
 numero_de_img_transformada=[]
 for finame in imagenes_de_prueba:  
     angulo_roll,angulo_pitch=leer_txt_y_obtiene_pitch_roll_angs(finame[0:len(finame)-3]+'txt')
-    Mr,y_r,x_r=compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,finame,path_resultados,mtx,dist,i,dim_resize,c_x,c_y)
+    Mr,y_r,x_r=compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,finame,path_resultados,mtx,dist,i,dim_resize,c_x,c_y,dim_orig)
     imagen_orig.append(finame)
     numero_de_img_transformada.append(str(i)+'.jpg')
     Mrr.append(Mr)
