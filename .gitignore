@@ -16,7 +16,6 @@
 *.weights
 *.jpeg
 *.JPEG
+yolov4.conv.137
 *.json
 *.pkl
-yolov4.conv.137
-
