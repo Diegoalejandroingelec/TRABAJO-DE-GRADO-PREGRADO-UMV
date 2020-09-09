@@ -11,8 +11,35 @@ def leer_txt_y_obtiene_pitch_roll_angs(path_archivo_txt):
     with open(path_archivo_txt) as f:
         for line in f: 
             numbers_str = line.split(',')  
-            roll_ang=float(numbers_str[8])
-            pitch_ang=float(numbers_str[9])
+    try:
+        roll_ang=float(numbers_str[8])      
+    except:
+        roll_ang=0   
+    try:
+        pitch_ang=float(numbers_str[9])
+    except:
+        pitch_ang=0
+        
+        
+    angulo_limite=20
+    if pitch_ang>angulo_limite or pitch_ang<-angulo_limite:
+        if pitch_ang>0:
+            pitch_ang=angulo_limite
+        if pitch_ang<0:
+            pitch_ang=-angulo_limite
+    
+    if roll_ang>angulo_limite or roll_ang<-angulo_limite:
+        if roll_ang>0:
+            roll_ang=angulo_limite
+        if roll_ang<0:
+            roll_ang=-angulo_limite
+        
+    if math.isnan(pitch_ang):
+        pitch_ang=0
+    
+    if math.isnan(roll_ang):
+        roll_ang=0
+        
     return roll_ang,pitch_ang
 
 
@@ -76,7 +103,15 @@ def undistorted_images(imagen,mtx,dist):
 def coordenadas_en_vista_de_pajaro(M,x_1,y_1):
     coordenadas_imagen_vista_pajaro=np.int32([((M[1,1]*M[2,2]-M[1,2]*M[2,1])*x_1-(M[0,1]*M[2,2]-M[0,2]*M[2,1])*y_1+(M[0,1]*M[1,2]-M[0,2]*M[1,1]))/((M[1,0]*M[2,1]-M[1,1]*M[2,0])*x_1-(M[0,0]*M[2,1]-M[0,1]*M[2,0])*y_1+(M[0,0]*M[1,1]-M[0,1]*M[1,0])),      -((M[1,0]*M[2,2]-M[1,2]*M[2,0])*x_1-(M[0,0]*M[2,2]-M[0,2]*M[2,0])*y_1+(M[0,0]*M[1,2]-M[0,2]*M[1,0]))/((M[1,0]*M[2,1]-M[1,1]*M[2,0])*x_1-(M[0,0]*M[2,1]-M[0,1]*M[2,0])*y_1+(M[0,0]*M[1,1]-M[0,1]*M[1,0]))])
     return coordenadas_imagen_vista_pajaro
-
+###############################################################
+####
+####
+####                 FUNCIÓN PARA CALCULAR LAS COORDENADAS 
+####                 EN LA IMÁGEN ORIGINAL TENIENDO 
+####                 LAS COORDENADAS DE LA IMÁGEN TRANSFORMADA Y 
+####                 LA MATRIZ DE HOMEOGRAFÍA 
+####
+###############################################################
 def coordenadas_en_vista_de_original(M_1,x_11,y_11):
     coordenadas_imagen_vista_original=np.int32([(M_1[0,0]*x_11+M_1[0,1]*y_11+M_1[0,2])/(M_1[2,0]*x_11+M_1[2,1]*y_11+M_1[2,2]),(M_1[1,0]*x_11+M_1[1,1]*y_11+M_1[1,2])/(M_1[2,0]*x_11+M_1[2,1]*y_11+M_1[2,2])])
     return coordenadas_imagen_vista_original
@@ -199,7 +234,7 @@ def matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_in
     
     filename=str(num_res)+'.jpg'
     cv2.imwrite(os.path.join(path_resultados,filename),transf_bird_eye)
-    
+    #CALCULA LOS FACTORES DE CONVERSION
     vertical_d=distancia([bias_X,bias_Y],[bias_X,rows+bias_Y])
     horizontal_d=distancia([bias_X,bias_Y],[cols+bias_X,bias_Y])
     factor_de_conv_lineal_Vertical=distancia_en_centimetros_vertical/vertical_d
@@ -219,20 +254,18 @@ def matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_in
 ####
 ###############################################################
 
-
-
-
-
-def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,angulo_roll,angulo_pitch,coordenada_ini,coordenada_finn,c_x,c_y):  
+def matriz_de_rotacion(transf_bird_eye,path_resultados,num_res,dim_resize,angulo_roll,angulo_pitch,coordenada_ini,coordenada_finn,c_x,c_y):  
    
     #alto1,ancho1=transf_bird_eye.shape[0],transf_bird_eye.shape[1]
-    
+    #FORMA LAS MATRICES DE ROTACIÓN PARA LOS ANGULOS PITCH Y ROLL
     pi=math.pi
     roll=(-angulo_roll*pi)/180
     pith=(-angulo_pitch*pi)/180
+    #MATRIZ PARA ANGULO ROLL
     My=np.array([[math.cos(roll),0,math.sin(roll)],[0,1,0],[-math.sin(roll),0,math.cos(roll)]])
+    #MATRIZ PARA ANGULO PITCH
     Mx=np.array([[1,0,0],[0,math.cos(pith),-math.sin(pith)],[0,math.sin(pith),math.cos(pith)]])
-    
+    #CAMBIA EL BIAS EN X DEPENDIENDO DEL ANGULO DE ROLL PARA QUE LA IMAGEN NO SE RECORTE 
     if angulo_roll<=10 and angulo_roll>=-10:
         bias_XX=10000
     if angulo_roll>10:
@@ -240,7 +273,7 @@ def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,ang
     if angulo_roll<-10:
        bias_XX=15000
        
-       
+    #CAMBIA EL BIAS EN Y DEPENDIENDO DEL ANGULO DE PITCH PARA QUE LA IMAGEN NO SE RECORTE   
     if angulo_pitch<=10 and angulo_pitch>=-10:
         bias_YY=10000
     if angulo_pitch>10:
@@ -248,10 +281,11 @@ def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,ang
     if angulo_pitch<-10:
         bias_YY=5000
         
-        
+    #DEFINE EL ANCHO Y ALTO DE LA IMAGEN EN 20000 PIXELES
     AN_AL=(20000,20000)
+    #FY Y FX SE ESTRAEN DE LA MATRIZ INTRINSECA DE LA CAMARA
     fy,fx= mtx[1][1],mtx[0][0]
-    
+    #CX Y CY SON LOS PUNTOS CENTRALES DEL PATRON DE DETECCION DE LAS ESQUINAS
     Krc=np.array([[mtx[0][0],mtx[0][1], c_x],
             [ mtx[1][0], mtx[1][1], c_y],
             [ mtx[2][0], mtx[2][1],mtx[2][2]]])
@@ -260,11 +294,12 @@ def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,ang
     Kvc=np.array([[fx,   0.        , bias_XX],
             [  0.        , fy, bias_YY],
             [  0.        ,   0.        ,   1.        ]])
-    
+    #DEFINE LAS MATRICES PARA OBTENER LA MATRIZ DE ROTACIÓN FINAL
     Kvc_m1=np.linalg.inv(Kvc)
     M_comp=np.dot(Mx,My)
+    #Mr MATRIZ DE ROTACIÓN CON ANGULOS DE PITCH Y ROLL
     Mr=np.dot(np.dot(Krc,M_comp),Kvc_m1)
-
+    #TRANSFORMACIÓN DE PERSPECTIVA
     transf_bird_eye_roll = cv2.warpPerspective(transf_bird_eye,Mr,AN_AL,flags=cv2.INTER_LINEAR+cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
     
     
@@ -273,7 +308,7 @@ def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,ang
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
     
-    
+    #RECORTA LA IMAGEN PARA QUE SOLO QUEDE EN LA IMAGEN LA REGION DE INTERES  
     limites_imagen=[]
     limites_imagen.append(coordenadas_en_vista_de_pajaro(Mr,0,0))
     limites_imagen.append(coordenadas_en_vista_de_pajaro(Mr,(transf_bird_eye.shape[1]-1),0))
@@ -299,7 +334,7 @@ def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,ang
     if limites_imagen[0][0]>limites_imagen[1][0]:
         x=0
         x_mayor=limites_imagen[1][0]   
-        
+    #CORRIGE EL RECORTE DE LA IMAGEN
     y,y_menor,x,x_mayor=corregir_recorte_imagen(y,y_menor,x,x_mayor,AN_AL)
     h=y_menor-y
     w=x_mayor-x
@@ -314,18 +349,11 @@ def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,ang
     # cv2.destroyAllWindows()
     
 
-    
+    #GUARDA LA IMAGEN TRANSFORMADA 
     filename=str(num_res)+'.jpg'
     cv2.imwrite(os.path.join(path_resultados,filename),transf_bird_eye_roll)
     
     return Mr,y,x
-
-
-
-
-
-
-
 
 ###############################################################
 ####
@@ -337,6 +365,7 @@ def matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,ang
 
 
 def compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,path_imagenes,path_resultados,mtx,dist,num_res,dim_resize,c_x,c_y):
+    #CARGA LA IMAGEN A TRANSFORMAR
     img_patron = cv2.imread(path_imagenes)
     
     # mostrarrrr=cv2.resize(img_patron  ,dim_resize)
@@ -344,6 +373,7 @@ def compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,path
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()  
     
+    #ELIMINA LA DISTORCIÓN TANGENCIAL Y RADIAL
     img_patron=undistorted_images(img_patron,mtx,dist)
  
     # mostrarrrr=cv2.resize(img_patron  ,dim_resize)
@@ -351,7 +381,9 @@ def compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,path
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()  
    
+    #TENIENDO LA MATRIZ DE HOMEOGRAFIA GENERADA CON LAS ESQUINAS TRANSFORMA LA IMAGEN
     transf_bird_eye = cv2.warpPerspective(img_patron,M,(ancho_IMG,altura_IMG),flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP+cv2.WARP_FILL_OUTLIERS, borderMode=cv2.BORDER_CONSTANT, borderValue = [0, 0, 0])
+    
     # c_t_xy=coordenadas_en_vista_de_pajaro(M,mtx[0,2],mtx[1,2])
     # print('punto principal transformado')
     # print(c_t_xy)
@@ -360,7 +392,7 @@ def compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,path
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
     
-    
+    #ENCUENTRA LAS COORDENADAS DE LA PARTE INFERIOR DE LA IMAGEN  
     flag_10=0
     flag_11=0
     for i in range(transf_bird_eye.shape[1]):         
@@ -375,7 +407,7 @@ def compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,path
         if flag_10==1 and flag_11==1:
             break
    
-    Mr,y_r,x_r=matriz_de_homeografia(transf_bird_eye,path_resultados,num_res,dim_resize,angulo_roll,angulo_pitch,coordenada_ini1,coordenada_finn1,c_x,c_y)
+    Mr,y_r,x_r=matriz_de_rotacion(transf_bird_eye,path_resultados,num_res,dim_resize,angulo_roll,angulo_pitch,coordenada_ini1,coordenada_finn1,c_x,c_y)
     return Mr,y_r,x_r
 
 
@@ -386,6 +418,7 @@ def compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,path
 ####
 ####
 ###############################################################
+#FUNCIÓN PARA DETECTAR LAS COORDENADAS DEL MOUSE EN LA IMAGEN CUANDO SE DA CLICK
 BAN=False
 def pnt1 (event,x,y,flags,param):
     global refpnt
@@ -544,8 +577,8 @@ coord_sup_izquierda,coord_sup_derecha,coord_inf_derecha,coord_inf_izquierda,img_
 
 
 tmstmp1 = time.time()
-imagenes_a_x_grados=66
-path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
+# imagenes_a_x_grados=66
+# path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados'
 
 
 #CUANDO LA CAMARA SE INCLINA HACIA ABAJO DEL CERO SE COMPENSA CON -
@@ -560,16 +593,16 @@ num_res=66666
 #
 distancia_en_centimetros_vertical=400
 distancia_en_centimetros_horizontal=300
+
 area_en_centimetros_cuadrados=distancia_en_centimetros_vertical*distancia_en_centimetros_horizontal
 path_del_tablero='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/'+str(imagenes_a_x_grados)+'_grados/tablero/tablero_esquinas.JPG'
 factor_de_conv_lineal_Vertical,factor_de_conv_lineal_Horizontal,factor_de_conv_area,c_x,c_y,M,ancho_IMG,altura_IMG=matriz_de_homeografia_TABLERO(coord_sup_izquierda,coord_sup_derecha,coord_inf_izquierda,coord_inf_derecha,path_del_tablero,path_resultados,num_res,dim_resize,area_en_centimetros_cuadrados,distancia_en_centimetros_horizontal,distancia_en_centimetros_vertical)
-
-
-
 save_obj(factor_de_conv_lineal_Vertical,'factor_conv_lineal_vertical')
 save_obj(factor_de_conv_lineal_Horizontal,'factor_conv_lineal_horizontal')
 save_obj(factor_de_conv_area,'factor_conv_area')
 
+tmstmp3 = time.time()
+print('TIEMPO CONSUMIDO EN CALCULO DE MATRIZ DE HOMEOGRAFIA PRINCIPAL = ', tmstmp3 - tmstmp1)
 
 imagenes_de_prueba=glob.glob(path_imagenes+'/*.JPG')
 i=0
@@ -580,6 +613,7 @@ imagen_orig=[]
 numero_de_img_transformada=[]
 for finame in imagenes_de_prueba:  
     angulo_roll,angulo_pitch=leer_txt_y_obtiene_pitch_roll_angs(finame[0:len(finame)-3]+'txt')
+    # print(angulo_roll,angulo_pitch)
     Mr,y_r,x_r=compensa_por_movimiento(M,ancho_IMG,altura_IMG,angulo_pitch,angulo_roll,finame,path_resultados,mtx,dist,i,dim_resize,c_x,c_y)
     imagen_orig.append(finame)
     numero_de_img_transformada.append(str(i)+'.jpg')
@@ -597,8 +631,7 @@ data_matrices_de_transfo = {'Mat_compensa':Mrr,
 
 save_obj(data_matrices_de_transfo,'info_de_matrices_de_homeografia')
 
-
 tmstmp2 = time.time()
-print('Total time elapsed = ', tmstmp2 - tmstmp1)
+print('TIEMPO CONSUMIDO EN LA TRANSFORMACIÓN DE TODAS LAS IMAGENES = ', tmstmp2 - tmstmp3)
 
 
