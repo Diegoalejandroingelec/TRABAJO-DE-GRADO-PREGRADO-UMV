@@ -176,27 +176,12 @@ def VERIFICA_ETIQUETADO(VoTT_csv,Mr,M,y_r,x_r,path_img_orig,nombre_de_la_imagen_
         i=i+1 
      
     hacer_archivo_json(dicci_asset,lista_dicci_region)  
-     
-    
-    
-        
-        
-      
         
 def load_obj(name ):
     with open( name, 'rb') as f:
         return pickle.load(f)
        
 data_matrices_de_transfo=load_obj('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/factores_de_conversion/info_de_matrices_de_homeografia.pkl') 
-
-
-
-
-
-
-
-
-
 VoTT_csv='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/IMAGENES_ETIQUETADAS/vott-csv-export/test_con_json-export.csv'
 path_proyecto_vott='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/IMAGENES_ORIGINALES_ETIQUETADAS/IMAGENES_ORIGINALES.vott'
 
@@ -212,6 +197,7 @@ nombre_de_la_imagen_transf=data_matrices_de_transfo['numero_img_transf']
 tmstmp1 = time.time()
 VERIFICA_ETIQUETADO(VoTT_csv,Mr,M,y_r,x_r,path_img_orig,nombre_de_la_imagen_transf,path_proyecto_vott)   
 tmstmp2 = time.time()
+
 print('Total time elapsed = ', tmstmp2 - tmstmp1)
 
 
