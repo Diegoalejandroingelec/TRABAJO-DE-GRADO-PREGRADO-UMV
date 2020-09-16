@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import glob
 import errno
+import numpy as np
 def funcion1(vott_df,labeldict):
     # Encode labels according to labeldict if code's don't exist
     if not "code" in vott_df.columns:
@@ -17,10 +18,14 @@ def crea_carpeta(path_carpeta):
         if e.errno != errno.EEXIST:
             raise
             
-def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder_para_direccion_de_imagenes_train,Folder_para_direccion_de_imagenes_test):
+def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder_para_direccion_de_imagenes_train,Folder_para_direccion_de_imagenes_test,porcentaje_de_cada_clase):
     multi_df = pd.read_csv(VoTT_csv)
     labels = multi_df["label"].unique()
     labeldict = dict(zip(labels, range(len(labels))))
+    print('Las clases son: ')
+    for clave, valor in labeldict.items():
+        print('Clase '+str(valor)+' '+ clave)
+    
     funcion1(multi_df, labeldict)
     nombre_de_la_imagen_anterior=''
     for index, row in multi_df.iterrows():
@@ -49,36 +54,28 @@ def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder
         
         
     #CUENTA CUANTOS PATRONES HAY DE CADA CLASE    
-    clase_0=0
-    clase_1=0
-    clase_2=0
+    clases_=np.zeros(len(labels))
     for index, row in multi_df.iterrows():
         codigo_clase=(row[["code"]].tolist())
-        if codigo_clase[0]==0:
-            clase_0=clase_0+1
-        if codigo_clase[0]==1:
-            clase_1=clase_1+1
-        if codigo_clase[0]==2:
-            clase_2=clase_2+1
+        clases_[codigo_clase[0]]+=1
+
             
     #ESTABLECE EL PORCENTAJE DE PATRONES PARA TRAIN        
-    porcentaje_clase_0=0.9
-    porcentaje_clase_1=0.85
-    porcentaje_clase_2=0.85
-    num_train_clase_0=int(clase_0*porcentaje_clase_0)
-    num_train_clase_1=int(clase_1*porcentaje_clase_1)
-    num_train_clase_2=int(clase_2*porcentaje_clase_2)
+    porcentaje_clase_=porcentaje_de_cada_clase
+    num_train_clases_=[]
+    for n in range(len(labels)):
+        num_train_clases_.append(int(clases_[n]*porcentaje_clase_[n]))
+        
+    #num_train_clases_=[int(clases_[0]*porcentaje_clase_0),int(clases_[1]*porcentaje_clase_1),int(clases_[2]*porcentaje_clase_2)]
+
     
     
     #INICIALIZA CONTADORES PARA SABER CUANTOS PATRONES VAN DE CADA CLASE PARA EL SET DE TRAIN
     nombre_de_la_imagen_anterior=''
-    clase_0_for_train=0
-    clase_1_for_train=0
-    clase_2_for_train=0
+    clases_for_train=np.zeros(len(labels))
     #INICIALIZA BANDERAS PARA CADA CLASE PARA SABER SI SE DEBEN GUARDAR MAS PATRONES DE DICHA CLASE 
-    prohibido_clase_0=False
-    prohibido_clase_1=False
-    prohibido_clase_2=False
+    prohibido_clases_=[False]*len(labels)
+
     #BANDERA PARA SABER SI GUARDAR O NO 
     no_guardar=False
     #LISTA PARA AGREGAR EL NOMBRE DE LA IMÁGENES DE TRAIN
@@ -95,40 +92,23 @@ def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder
             no_guardar=False
         #SI LA BANDERA DE GUARDADO ESTA EN FALSE AUMNETA EL CONTADOR DE LA CLASE
         #SIEMPRE QUE NO HAYA REVASADO EL NUMERO DEFINIDO DE PATRONES POR CLASE            
-        if no_guardar==False: 
-            if codigo_clase[0]==0 and clase_0_for_train<num_train_clase_0:
-                clase_0_for_train=clase_0_for_train+1
-                #print(nombre_de_la_imagen[0])
-            if codigo_clase[0]==1 and clase_1_for_train<num_train_clase_1:  
-                clase_1_for_train=clase_1_for_train+1
-                #print(nombre_de_la_imagen[0])
-            if codigo_clase[0]==2 and clase_2_for_train<num_train_clase_2:
-                clase_2_for_train=clase_2_for_train+1
-                #print(nombre_de_la_imagen[0])
-        
+        if no_guardar==False:             
+            if clases_for_train[codigo_clase[0]]<num_train_clases_[codigo_clase[0]]:
+                clases_for_train[codigo_clase[0]]+=1
         
         #SI EL NUMERO DE PATRONES POR CLASE ES MAYOR O IGUAL AL LIMITE DEFINIDO
         #PROHIBE GUARDAR LA CLASE QUE HA REVASADO DICHO LIMITE
-        if clase_0_for_train>=num_train_clase_0:
-            prohibido_clase_0=True
-        if clase_1_for_train>=num_train_clase_1:
-            prohibido_clase_1=True
-        if clase_2_for_train>=num_train_clase_2:
-            prohibido_clase_2=True
+        if clases_for_train[codigo_clase[0]]>=num_train_clases_[codigo_clase[0]]:
+            prohibido_clases_[codigo_clase[0]]=True
+       
         
         
         #SI LA CLASE ESTÁ PROHIBIDA Y LA CLASE DEL RECUADRO COINCIDE CON LA CLASE PROHIBIDA, ACTIVA LA BANDERA
         #QUE EVITA QUE LA IMAGEN SE GUARDE EN LA LISTA DE IMAGENES PARA TRAIN
-        if prohibido_clase_0 and codigo_clase[0]==0:
+        if prohibido_clases_[codigo_clase[0]]:
             no_guardar=True
             #print('SE ACTIVÓ UN NO GUARGAR CON LA IMAGEN', nombre_de_la_imagen[0],'CON CLASE 0 PROHIBIDA')
-        if prohibido_clase_1 and codigo_clase[0]==1:
-            no_guardar=True
-            #print('SE ACTIVÓ UN NO GUARGAR CON LA IMAGEN', nombre_de_la_imagen[0],'CON CLASE 1 PROHIBIDA')
-        if prohibido_clase_2 and codigo_clase[0]==2:
-            no_guardar=True
-            #print('SE ACTIVÓ UN NO GUARGAR CON LA IMAGEN', nombre_de_la_imagen[0],'CON CLASE 2 PROHIBIDA')
-    
+       
     
     
     
@@ -175,25 +155,12 @@ def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder
             
         if nombre_de_la_imagen[0] in imagenes_to_train:
             codigos_train.append(codigo_clase[0])   
-        # for n in imagenes_to_test:
-        #     if nombre_de_la_imagen[0]==n:
-        #         codigos_test.append(codigo_clase[0])
-        
-        # for n in imagenes_to_train:
-        #     if nombre_de_la_imagen[0]==n:
-        #         codigos_train.append(codigo_clase[0])
                 
     #CUENTA CUANTOS PATRONES HAY EN CADA CLASE PARA EL DATASET DE TEST
-    c_0=0
-    c_1=0
-    c_2=0
+    c_=np.zeros(len(labels))
     for n in codigos_test:
-        if n==0:
-            c_0+=1
-        if n==1:
-            c_1+=1
-        if n==2:
-            c_2+=1
+        c_[n]+=1
+        
     
     #AGRUPA TODAS LAS IMAGENES CON CLASES DE INTERES EN UNA LISTA
     imagenes_con_clases_de_interes=imagenes_to_train+imagenes_to_test
@@ -248,46 +215,45 @@ def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder
     print('El total de imagenes es '+str(len(imagenes_to_test)+len(imagenes_to_train)+con_test+con_train))
     print('')
     print('')
-    print('El total de patrones de la clase '+labels[0]+' es: '+ str(clase_0))
-    print('El total de patrones de la clase '+labels[1]+' es: '+ str(clase_1))
-    print('El total de patrones de la clase '+labels[2]+' es: '+ str(clase_2))
+    for n in range(len(labels)):
+        print('El total de patrones de la clase '+labels[n]+' es: '+ str(clases_[n]))
     print('El total de imagenes sin clases de interes (sin label) es: '+ str(len(imagenes_sin_clases_de_interes)))
     print('')
     print('')
-    print('Hay '+str(c_0)+' patrones en la clase '+labels[0]+' para test es decir un '+str("{:.2f}".format((c_0*100)/clase_0))+'%')
-    print('Hay '+str(c_1)+' patrones en la clase '+labels[1]+' para test es decir un '+str("{:.2f}".format((c_1*100)/clase_1))+'%')
-    print('Hay '+str(c_2)+' patrones en la clase '+labels[2]+' para test es decir un '+str("{:.2f}".format((c_2*100)/clase_2))+'%')
-    print('Hay '+str(con_test)+' imagenes sin label para test es decir un '+str("{:.2f}".format((con_test*100)/len(imagenes_sin_clases_de_interes)))+'%') 
-    c_00=0
-    c_11=0
-    c_22=0
+    for n in range(len(labels)):
+        print('Hay '+str(c_[n])+' patrones en la clase '+labels[n]+' para test es decir un '+str("{:.2f}".format((c_[n]*100)/clases_[n]))+'%')
+    if len(imagenes_sin_clases_de_interes) >0:
+        print('Hay '+str(con_test)+' imagenes sin label para test es decir un '+str("{:.2f}".format((con_test*100)/len(imagenes_sin_clases_de_interes)))+'%') 
+    c_t=np.zeros(len(labels))
     for n in codigos_train:
-        if n==0:
-            c_00+=1
-        if n==1:
-            c_11+=1
-        if n==2:
-            c_22+=1
+        c_t[n]+=1
     print('')
     print('')
-    print('Hay '+str(c_00)+' patrones en la clase '+labels[0]+' para train es decir un '+str("{:.2f}".format((c_00*100)/clase_0))+'%')
-    print('Hay '+str(c_11)+' patrones en la clase '+labels[1]+' para train es decir un '+str("{:.2f}".format((c_11*100)/clase_1))+'%')
-    print('Hay '+str(c_22)+' patrones en la clase '+labels[2]+' para train es decir un '+str("{:.2f}".format((c_22*100)/clase_2))+'%')
-    print('Hay '+str(con_train)+' imagenes sin label para train es decir un '+str("{:.2f}".format((con_train*100)/len(imagenes_sin_clases_de_interes)))+'%') 
+    for n in range(len(labels)):
+        print('Hay '+str(c_t[n])+' patrones en la clase '+labels[n]+' para train es decir un '+str("{:.2f}".format((c_t[n]*100)/clases_[n]))+'%')
+    if len(imagenes_sin_clases_de_interes) >0:
+        print('Hay '+str(con_train)+' imagenes sin label para train es decir un '+str("{:.2f}".format((con_train*100)/len(imagenes_sin_clases_de_interes)))+'%') 
 
             
             
-       
+#PATH DONDE SE VAN A GUARDAR LOS LABELS Y EL ARCHIVO CON LOS NOMBRES DE LAS CLASES        
 Folder_labels='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/labels'
-VoTT_csv = '/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/libros_2-export.csv'
-image_path='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/'
 path_clases_file='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/clases'
+
+#PATH DONDE SE VAN A GUARDAR ARCHIVOS DE TEXTO CON LOS PATH DE LA IMAGENES PARA TRAIN Y PARA TEST
 Folder_para_direccion_de_imagenes_train='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/train.txt'
 Folder_para_direccion_de_imagenes_test='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/test.txt'
+
+#PATH DE LA UBICACIÓN DEL ARCHIVO CSV DE LAS ETIQUETAS Y PATH DE LAS IMÁGENES 
+VoTT_csv = '/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/libros_2-export.csv'
+image_path='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/'
+
+
 
 crea_carpeta(path_clases_file)
 crea_carpeta(Folder_labels)
 
-csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder_para_direccion_de_imagenes_train,Folder_para_direccion_de_imagenes_test) 
+porcentaje_de_cada_clase=[0.90,0.85,0.85]
+csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder_para_direccion_de_imagenes_train,Folder_para_direccion_de_imagenes_test,porcentaje_de_cada_clase) 
 
     
