@@ -19,21 +19,22 @@ except OSError as e:
         raise
 color_0 = (255,0,0)
 for imagen_info in detection_images:
-    img=cv2.imread(imagen_info['image_name'])
-    for detection_number in range(len(imagen_info['detections'])):
-        yExtent=int(imagen_info['detections'][detection_number][2][3])
-        xEntent=int(imagen_info['detections'][detection_number][2][2])
-        xCoord=int(imagen_info['detections'][detection_number][2][0]-imagen_info['detections'][detection_number][2][2]/2)
-        yCoord=int(imagen_info['detections'][detection_number][2][1]-imagen_info['detections'][detection_number][2][3]/2)
-        sup_izq=(xCoord, yCoord)
-        inf_der=(xCoord + xEntent, yCoord + yExtent)
-        sup_izq_titulo=(xCoord, yCoord-30)
-        cv2.rectangle(img,sup_izq,inf_der, color_0, 8)
-        clase=imagen_info['detections'][detection_number][0]
-        proba=imagen_info['detections'][detection_number][1]
-        cv2.putText(img,clase+' '+str("{:.2f}".format(proba*100))+'%', sup_izq_titulo, cv2.FONT_HERSHEY_SIMPLEX, 3, color_0, 4)
-    
-    img_g=cv2.resize(img,(1000,700))
-    cv2.imwrite(os.path.join(path_imagenes_boundingbox,imagen_info['image_name'].lstrip(path_imagenes)),img_g)
+    if imagen_info['detections']:
+        img=cv2.imread(imagen_info['image_name'])
+        for detection_number in range(len(imagen_info['detections'])):
+            yExtent=int(imagen_info['detections'][detection_number][2][3])
+            xEntent=int(imagen_info['detections'][detection_number][2][2])
+            xCoord=int(imagen_info['detections'][detection_number][2][0]-imagen_info['detections'][detection_number][2][2]/2)
+            yCoord=int(imagen_info['detections'][detection_number][2][1]-imagen_info['detections'][detection_number][2][3]/2)
+            sup_izq=(xCoord, yCoord)
+            inf_der=(xCoord + xEntent, yCoord + yExtent)
+            sup_izq_titulo=(xCoord, yCoord-30)
+            cv2.rectangle(img,sup_izq,inf_der, color_0, 8)
+            clase=imagen_info['detections'][detection_number][0]
+            proba=imagen_info['detections'][detection_number][1]
+            cv2.putText(img,clase+' '+str("{:.2f}".format(proba*100))+'%', sup_izq_titulo, cv2.FONT_HERSHEY_SIMPLEX, 3, color_0, 4)
+        
+        img_g=cv2.resize(img,(1000,700))
+        cv2.imwrite(os.path.join(path_imagenes_boundingbox,imagen_info['image_name'].lstrip(path_imagenes)),img_g)
         
         
