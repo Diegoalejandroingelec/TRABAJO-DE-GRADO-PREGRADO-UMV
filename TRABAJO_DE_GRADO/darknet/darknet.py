@@ -313,7 +313,7 @@ netMain = None
 metaMain = None
 altNames = None
 
-def performDetect(imagePath, thresh= 0.30, configPath = "./cfg/yolov4-libros.cfg", weightPath = "./backup/yolov4-libros_best.weights", metaPath= "./cfg/libros.data", showImage= True, makeImageOnly = False, initOnly= False):
+def performDetect(imagePath, thresh= 0.20, configPath = "./cfg/yolov4-fallas.cfg", weightPath = "./backup/yolov4-fallas_7000.weights", metaPath= "./cfg/fallas.data", showImage= True, makeImageOnly = False, initOnly= False):
     """
     Convenience function to handle the detection and returns of objects.
 
@@ -538,6 +538,19 @@ def save_obj(obj, name ):
     with open('detect_images_info/'+ name + '.pkl', 'wb') as f:
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
+def obtiene_path_img_ventaneadas(nombre_de_la_imagen,path_guarda_imagenes_ventaneadas):
+    name_img=nombre_de_la_imagen.split("/")[-1][0:len(nombre_de_la_imagen.split("/")[-1])-4]
+    lista_aux=glob.glob(path_guarda_imagenes_ventaneadas+'/*.jpg')
+    lista_aux.sort()
+    ventanas=[]
+    cont=0
+    while(path_guarda_imagenes_ventaneadas+'/'+name_img+'_v'+str(cont)+'.jpg' in lista_aux):
+        ventanas.append(path_guarda_imagenes_ventaneadas+'/'+name_img+'_v'+str(cont)+'.jpg')
+        cont=cont+1
+    
+    return(ventanas)
+            
+            
 
 if __name__ == "__main__":
     path_resultado_de_deteccion='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/detect_images_info'
@@ -545,15 +558,31 @@ if __name__ == "__main__":
         os.mkdir(path_resultado_de_deteccion) 
     except OSError as e:
         if e.errno != errno.EEXIST:
-            raise    
-    path_im_prueba_1='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/data/imagenes_libros/*.jpg'
-    imagenes_1 = glob.glob(path_im_prueba_1)
+            raise
+            
+    path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS_dia2/img_diego_dia2'
+    path_guarda_imagenes_ventaneadas='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/img_ventaneadas_para_deteccion_dia2'
+    
+    imagenes_de_prueba=glob.glob(path_imagenes+'/*.jpg')  
+    
+    # path_im_prueba_1='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/data/imagenes_libros/*.jpg'
+    # imagenes_1 = glob.glob(path_im_prueba_1)
+    
+    
+    
     detection_images=[]
+    i=0
     tmstmp1 = time.time()
-    for n in imagenes_1:
-        detection_images.append(performDetect(imagePath=n,showImage=False)) 
+    for nombre_de_la_imagen in imagenes_de_prueba:
+        ventanas_list=obtiene_path_img_ventaneadas(nombre_de_la_imagen,path_guarda_imagenes_ventaneadas)
+        for window_path in ventanas_list:
+            detection_images.append(performDetect(imagePath=window_path,showImage=False))
+        i=i+1
+        if i%100==0:
+            print(window_path)
+        
     tmstmp2 = time.time()
     print('Total time elapsed = ', tmstmp2 - tmstmp1)
-    save_obj(detection_images, 'informacion_imagenes' )
+    save_obj(detection_images, 'informacion_imagenes_dia2' )
     #Uncomment the following line to see batch inference working 
     #print(performBatchDetect())
