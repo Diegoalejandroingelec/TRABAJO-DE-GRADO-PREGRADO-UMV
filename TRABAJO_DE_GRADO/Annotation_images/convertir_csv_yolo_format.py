@@ -43,7 +43,7 @@ def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder
         H_im_relat=H_im/height
         W_im_relat=W_im/width
         texto=str(info[0])+' '+str(X_relat)+' '+str(Y_relat)+' '+str(W_im_relat)+' '+str(H_im_relat)+os.linesep   
-        file = open(Folder_labels+'/'+str(nombre_de_la_imagen[0].strip('.jpg'))+'.txt', "a")
+        file = open(Folder_labels+'/'+str(nombre_de_la_imagen[0][0:len(nombre_de_la_imagen[0])-4])+'.txt', "a")
         file.write(texto)
         file.close()
         nombre_de_la_imagen_anterior=nombre_de_la_imagen
@@ -169,7 +169,7 @@ def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder
     todas_las_images_en_la_carpeta = glob.glob(image_path+'*.jpg')
     aux=[]
     for fnames in todas_las_images_en_la_carpeta:
-        aux.append(fnames.lstrip(image_path))
+        aux.append(fnames.split('/')[-1])
     #QUITA EL PATH DE LAS IMAGENES Y SOLO DEJA EL NOMBRE    
     todas_las_images_en_la_carpeta=aux
     
@@ -181,7 +181,7 @@ def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder
 
     #CREA ARCHIVOS DE TEXTO VACIOS PARA CADA IMAGEN SIN CLASE DE INTERES        
     for n in imagenes_sin_clases_de_interes:
-        file = open(Folder_labels+'/'+n.strip('.jpg')+'.txt','a')
+        file = open(Folder_labels+'/'+n[0:len(n)-4]+'.txt','a')
         file.close()
         
     #DEFINE EL NUMERO DE IMAGENES SIN CLASES DE INTERES PARA TRAIN   
@@ -237,23 +237,23 @@ def csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder
             
             
 #PATH DONDE SE VAN A GUARDAR LOS LABELS Y EL ARCHIVO CON LOS NOMBRES DE LAS CLASES        
-Folder_labels='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/labels'
-path_clases_file='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/clases'
+Folder_labels='/data/estudiantes/umv/DATOS_PARA_YOLO/info_dataset_2/labels'
+path_clases_file='/data/estudiantes/umv/DATOS_PARA_YOLO/clases'
 
 #PATH DONDE SE VAN A GUARDAR ARCHIVOS DE TEXTO CON LOS PATH DE LA IMAGENES PARA TRAIN Y PARA TEST
-Folder_para_direccion_de_imagenes_train='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/train.txt'
-Folder_para_direccion_de_imagenes_test='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/test.txt'
+Folder_para_direccion_de_imagenes_train='/data/estudiantes/umv/DATOS_PARA_YOLO/train.txt'
+Folder_para_direccion_de_imagenes_test='/data/estudiantes/umv/DATOS_PARA_YOLO/test.txt'
 
 #PATH DE LA UBICACIÓN DEL ARCHIVO CSV DE LAS ETIQUETAS Y PATH DE LAS IMÁGENES 
-VoTT_csv = '/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/libros_2-export.csv'
-image_path='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/Info_dataset/JPEGImages/'
+VoTT_csv = '/data/estudiantes/umv/DATOS_PARA_YOLO/info_dataset_2/JPEGImages/archivo_fusionado.csv'
+image_path='/data/estudiantes/umv/DATOS_PARA_YOLO/info_dataset_2/JPEGImages/'
 
 
 
 crea_carpeta(path_clases_file)
 crea_carpeta(Folder_labels)
 
-porcentaje_de_cada_clase=[0.90,0.85,0.85]
+porcentaje_de_cada_clase=[0.80]
 csv_to_yolo_format(VoTT_csv,image_path,Folder_labels,path_clases_file,Folder_para_direccion_de_imagenes_train,Folder_para_direccion_de_imagenes_test,porcentaje_de_cada_clase) 
 
     
