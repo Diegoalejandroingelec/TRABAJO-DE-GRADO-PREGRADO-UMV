@@ -58,4 +58,8 @@ clase_para_eliminar='LIBRO'
 
 fusionar_archivos_csv(path_de_archivos_a_fusionar,path_de_archivo_fusionado)
 
-elimina_clases(path_archivo_inp,path_archivo_out,clase_para_eliminar)
+#elimina_clases(path_archivo_inp,path_archivo_out,clase_para_eliminar)
+
+    
+    
+
