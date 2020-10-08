@@ -1,7 +1,5 @@
-import numpy as np
+
 import cv2
-import pandas as pd
-import math
 import pickle
 import os
 import errno
@@ -11,7 +9,7 @@ def load_obj(name ):
         return pickle.load(f)
 detection_images= load_obj('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/detect_images_info/informacion_imagenes.pkl')
 path_imagenes_boundingbox='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Recuadros_contenedores/resultados_con_recuadros'
-path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/data/imagenes_libros/'
+path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/IMAGENES_ETIQUETADAS/vott-csv-export/'
 try:
     os.mkdir(path_imagenes_boundingbox) 
 except OSError as e:
@@ -29,12 +27,16 @@ for imagen_info in detection_images:
             sup_izq=(xCoord, yCoord)
             inf_der=(xCoord + xEntent, yCoord + yExtent)
             sup_izq_titulo=(xCoord, yCoord-30)
-            cv2.rectangle(img,sup_izq,inf_der, color_0, 8)
+            cv2.rectangle(img,sup_izq,inf_der, color_0, 3)
             clase=imagen_info['detections'][detection_number][0]
             proba=imagen_info['detections'][detection_number][1]
-            cv2.putText(img,clase+' '+str("{:.2f}".format(proba*100))+'%', sup_izq_titulo, cv2.FONT_HERSHEY_SIMPLEX, 3, color_0, 4)
+            cv2.putText(img,clase+' '+str("{:.2f}".format(proba*100))+'%', sup_izq_titulo, cv2.FONT_HERSHEY_SIMPLEX, 1, color_0, 2)
         
         img_g=cv2.resize(img,(1000,700))
-        cv2.imwrite(os.path.join(path_imagenes_boundingbox,imagen_info['image_name'].lstrip(path_imagenes)),img_g)
+        cv2.imwrite(os.path.join(path_imagenes_boundingbox,imagen_info['image_name'].split("/")[-1]),img_g)
         
+    if not imagen_info['detections']:    
+        img=cv2.imread(imagen_info['image_name'])
+        img_g=cv2.resize(img,(1000,700))
+        cv2.imwrite(os.path.join(path_imagenes_boundingbox,imagen_info['image_name'].split("/")[-1]),img_g)
         
