@@ -313,7 +313,7 @@ netMain = None
 metaMain = None
 altNames = None
 
-def performDetect(imagePath, thresh= 0.20, configPath = "./cfg/yolov4-fallas.cfg", weightPath = "./backup/yolov4-fallas_7000.weights", metaPath= "./cfg/fallas.data", showImage= True, makeImageOnly = False, initOnly= False):
+def performDetect(imagePath, thresh= 0.20, configPath = "./cfg/yolov4-fallas-multi-clase.cfg", weightPath = "./backup/yolov4-fallas-multi-clase_34000.weights", metaPath= "./cfg/fallas-multi-clase.data", showImage= True, makeImageOnly = False, initOnly= False):
     """
     Convenience function to handle the detection and returns of objects.
 
@@ -560,8 +560,8 @@ if __name__ == "__main__":
         if e.errno != errno.EEXIST:
             raise
             
-    path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS_dia2/img_diego_dia2'
-    path_guarda_imagenes_ventaneadas='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/img_ventaneadas_para_deteccion_dia2'
+    path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/66_grados/imagenes_recortadas/img_etiquetadas/vott-csv-export'
+    path_guarda_imagenes_ventaneadas='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/img_ventaneadas_para_deteccion_dia1'
     
     imagenes_de_prueba=glob.glob(path_imagenes+'/*.jpg')  
     
@@ -583,6 +583,6 @@ if __name__ == "__main__":
         
     tmstmp2 = time.time()
     print('Total time elapsed = ', tmstmp2 - tmstmp1)
-    save_obj(detection_images, 'informacion_imagenes_dia2' )
+    save_obj(detection_images, 'informacion_imagenes_dia1_multi_clase' )
     #Uncomment the following line to see batch inference working 
     #print(performBatchDetect())
