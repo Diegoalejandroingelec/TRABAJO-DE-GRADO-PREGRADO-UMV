@@ -14,22 +14,139 @@ import pickle
 import os
 import errno
 
+
+
+
+def calcula_interseccion_entre_cuadrados(info,x_min,y_min,x_max,y_max):
+    tipo=[]
+    flag_muy_similares=False
+    esta_en_ventana=False
+    info_aux=[0,0,0,0]
+    if (info[0]< x_min) and (info[1] < y_min) and (info[2]>x_min) and (info[3]>y_min) and (info[2]<=x_max) and (info[3]<=y_max):
+        info_aux=([0,0,info[2]-x_min,info[3]-y_min])
+        esta_en_ventana=True
+        tipo.append('c0')
+    
+    if (info[0]>= x_min) and (info[0]< x_max) and (info[1] < y_min) and (info[2]>x_min) and (info[3]>y_min) and (info[2]<=x_max) and (info[3]<=y_max):
+        info_aux=([info[0]-x_min,0,info[2]-x_min,info[3]-y_min])
+        esta_en_ventana=True
+        tipo.append('c1')
+    
+    if (info[0]>= x_min) and (info[0]< x_max) and (info[1] < y_min) and (info[3]>y_min) and (info[2]>x_max) and (info[3]<=y_max):
+        info_aux=([info[0]-x_min,0,x_max-x_min,info[3]-y_min])
+        esta_en_ventana=True
+        tipo.append('c2')
+    
+    if (info[0]< x_min)  and (info[1] >= y_min)and(info[1] < y_max) and (info[2]>x_min) and (info[3]>y_min) and (info[2]<=x_max) and (info[3]<=y_max):
+        info_aux=([0,info[1]-y_min,info[2]-x_min,info[3]-y_min])
+        esta_en_ventana=True
+        tipo.append('c3')
+    
+    if (info[0]>= x_min)  and (info[1] >= y_min)and (info[0]<x_max) and(info[1] < y_max) and (info[2]>x_min) and (info[3]>y_min) and (info[2]<=x_max) and (info[3]<=y_max):
+        info_aux=([info[0]-x_min,info[1]-y_min,info[2]-x_min,info[3]-y_min])
+        esta_en_ventana=True
+        tipo.append('c4')
+    
+    if (info[0]>= x_min)  and (info[1] >= y_min)and (info[0]< x_max) and(info[1] < y_max) and (info[3]>y_min) and (info[2]>x_max) and (info[3]<=y_max):
+        info_aux=([info[0]-x_min,info[1]-y_min,x_max-x_min,info[3]-y_min])
+        esta_en_ventana=True
+        tipo.append('c5')
+    
+    if (info[0]< x_min)  and (info[1] >= y_min) and(info[1] < y_max) and (info[2]>x_min)and (info[2]<=x_max) and (info[3]>=y_max):
+        info_aux=([0,info[1]-y_min,info[2]-x_min,y_max-y_min])
+        esta_en_ventana=True
+        tipo.append('c6')
+    
+    if (info[0]>= x_min)  and (info[1] >= y_min)and (info[0]< x_max) and(info[1] < y_max) and (info[2]>x_min)and (info[2]<=x_max) and (info[3]>=y_max):
+        info_aux=([info[0]-x_min,info[1]-y_min,info[2]-x_min,y_max-y_min])
+        esta_en_ventana=True
+        tipo.append('c7')
+    
+    if (info[0]>= x_min)  and (info[1] >= y_min)and (info[0]< x_max) and(info[1] < y_max) and (info[2]>=x_max) and (info[3]>=y_max):
+        info_aux=([info[0]-x_min,info[1]-y_min,x_max-x_min,y_max-y_min])
+        esta_en_ventana=True
+        tipo.append('c8')
+        
+    if (info[0]< x_min)  and (info[1] < y_min) and (info[2]>x_max) and (info[3]>y_min) and (info[3]<=y_max):
+        info_aux=([0,0,x_max-x_min,info[3]-y_min])
+        esta_en_ventana=True
+        tipo.append('c9')
+        
+    if (info[0]< x_min)  and (info[1] >= y_min)and (info[1] < y_max) and (info[2]>x_max) and (info[3]>y_min) and (info[3]<=y_max):
+        info_aux=([0,info[1]-y_min,x_max-x_min,info[3]-y_min])
+        esta_en_ventana=True
+        tipo.append('c10')
+        
+    if (info[0]< x_min)  and (info[1] >= y_min)and (info[1] < y_max) and (info[2]>x_max)  and (info[3]>y_max):
+        info_aux=([0,info[1]-y_min,x_max-x_min,y_max-y_min])
+        esta_en_ventana=True
+        tipo.append('c11')
+        
+    if (info[0]< x_min)  and (info[1] < y_min) and (info[2]>x_min)and (info[2]<x_max)  and (info[3]>y_max):
+        info_aux=([0,0,info[2]-x_min,y_max-y_min])
+        esta_en_ventana=True
+        tipo.append('c12')
+                    
+    if (info[0]>= x_min)and(info[0]< x_max)  and (info[1] < y_min) and (info[2]>x_min)and (info[2]<=x_max)  and (info[3]>y_max):
+        info_aux=([info[0]-x_min,0,info[2]-x_min,y_max-y_min])
+        esta_en_ventana=True
+        tipo.append('c13')
+        
+    if (info[0]>= x_min)and(info[0]< x_max)  and (info[1] < y_min) and (info[2]>x_max)  and (info[3]>y_max):
+        info_aux=([info[0]-x_min,0,x_max-x_min,y_max-y_min])
+        esta_en_ventana=True
+        tipo.append('c14')
+        
+    if (info[0]<= x_min)  and (info[1] <= y_min) and (info[2]>=x_max)  and (info[3]>=y_max):
+        info_aux=([0,0,x_max-x_min,y_max-y_min])
+        esta_en_ventana=True
+        tipo.append('c15')
+    
+    num_de_pix_intersection=(info_aux[2]-info_aux[0])*(info_aux[3]-info_aux[1])
+    
+    num_de_pix_recuadro_1=(info[2]-info[0])*(info[3]-info[1])
+    num_de_pix_recuadro_2=(x_max-x_min)*(y_max-y_min)
+    
+    IoU=num_de_pix_intersection/((num_de_pix_recuadro_1+num_de_pix_recuadro_2)-num_de_pix_intersection)
+    if (IoU > 0.7) or ('c15'in tipo )or ('c4' in tipo):
+       flag_muy_similares=True 
+    if (num_de_pix_intersection*100)/num_de_pix_recuadro_1>80:
+        flag_muy_similares=True
+    if (num_de_pix_intersection*100)/num_de_pix_recuadro_2>80:
+        flag_muy_similares=True
+    
+    return esta_en_ventana,flag_muy_similares
+
+
 def load_obj(name ):
     with open( name, 'rb') as f:
         return pickle.load(f)
     
+def save_obj(obj, name ):
+    with open('info_deteccion_img_grande/'+ name + '.pkl', 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+
+path_resultado_de_deteccion_img_big='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Recuadros_contenedores/info_deteccion_img_grande'
+try:
+    os.mkdir(path_resultado_de_deteccion_img_big) 
+except OSError as e:
+    if e.errno != errno.EEXIST:
+        raise 
+        
+        
 dicci_ventaneado=load_obj('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/datos_del_ventaneado/datos_ventaneado_dia2.pkl')    
 detection_images= load_obj('/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/detect_images_info/informacion_imagenes_dia2.pkl')
-path_imagenes_boundingbox='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Recuadros_contenedores/resultados_con_recuadros_4'
+path_imagenes_boundingbox='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Recuadros_contenedores/resultados_dia2'
 
-path_imagenes_grandes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS_dia2/img_diego_dia2/'
+path_imagenes_grandes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS_dia2/imagenes_recortadas/'
 try:
     os.mkdir(path_imagenes_boundingbox) 
 except OSError as e:
     if e.errno != errno.EEXIST:
         raise
 color_0 = (0,0,255)
-
+color_1 = (255,0,0)
 detection_big_images=[]
 imagen_anterior=''
 for n in range(len(detection_images)):
@@ -57,7 +174,48 @@ for n in range(len(detection_images)):
 
 
 
+def coordenadas_e_info_bounding_box(imagen_info,detection_number):
+    yExtent=int(imagen_info['detections'][detection_number][2][3])
+    xEntent=int(imagen_info['detections'][detection_number][2][2])
+    xCoord=int(imagen_info['detections'][detection_number][2][0]-imagen_info['detections'][detection_number][2][2]/2)
+    yCoord=int(imagen_info['detections'][detection_number][2][1]-imagen_info['detections'][detection_number][2][3]/2)
+    sup_izq=(xCoord, yCoord)
+    inf_der=(xCoord + xEntent, yCoord + yExtent)
+    clase=imagen_info['detections'][detection_number][0]
+    return sup_izq,inf_der,clase
 
+cont=0
+cont2=0
+
+for imagen_info in detection_big_images:
+    if imagen_info['detections']:
+        lista_de_indices_para_eliminar=[]
+        for detection_number in range(len(imagen_info['detections'])):
+            cont2+=1
+            sup_izq,inf_der,clase=coordenadas_e_info_bounding_box(imagen_info,detection_number)
+            for det_n in range(len(imagen_info['detections'])-detection_number-1):
+                sup_izq1,inf_der1,clase1=coordenadas_e_info_bounding_box(imagen_info,det_n+detection_number+1)
+                infor=[sup_izq[0],sup_izq[1],inf_der[0],inf_der[1]]
+                esta_en_ventana,flag_muy_similares=calcula_interseccion_entre_cuadrados(infor,sup_izq1[0],sup_izq1[1],inf_der1[0],inf_der1[1])
+                
+                if flag_muy_similares and clase==clase1:
+                    bb1=(inf_der[0]-sup_izq[0])*(inf_der[1]-sup_izq[1])
+                    bb2=(inf_der1[0]-sup_izq1[0])*(inf_der1[1]-sup_izq1[1])
+                    if bb1>bb2:
+                        lista_de_indices_para_eliminar.append(det_n+detection_number+1) 
+                    if bb2>bb1:
+                        lista_de_indices_para_eliminar.append(detection_number)
+                    if bb2==bb1:
+                        lista_de_indices_para_eliminar.append(detection_number)
+                    cont+=1
+        for borra in lista_de_indices_para_eliminar:
+            imagen_info['detections'][borra]='borrar'
+        while('borrar' in imagen_info['detections']):
+            imagen_info['detections'].remove('borrar')
+            
+save_obj(detection_big_images, 'informacion_imagenes_grandes_dia_2' )           
+    
+    
 
 for imagen_info in detection_big_images:
     if imagen_info['detections']:
@@ -70,17 +228,24 @@ for imagen_info in detection_big_images:
             sup_izq=(xCoord, yCoord)
             inf_der=(xCoord + xEntent, yCoord + yExtent)
             sup_izq_titulo=(xCoord, yCoord-30)
-            cv2.rectangle(img,sup_izq,inf_der, color_0, 5)
             clase=imagen_info['detections'][detection_number][0]
+            if clase=='hueco':
+                color=color_0
+            if clase == 'falla':
+                color=color_1
+                
+            cv2.rectangle(img,sup_izq,inf_der, color, 2)
             proba=imagen_info['detections'][detection_number][1]
             #cv2.putText(img,clase+' '+str("{:.2f}".format(proba*100))+'%', sup_izq_titulo, cv2.FONT_HERSHEY_SIMPLEX, 2, color_0, 3)
+            #cv2.putText(img,clase[0], sup_izq_titulo, cv2.FONT_HERSHEY_SIMPLEX, 2, color, 3)
+        
         
 #        img_g=cv2.resize(img,(2500,1500))
         cv2.imwrite(os.path.join(path_imagenes_boundingbox,imagen_info['image_name'].split("/")[-1]),img)
         
     if not imagen_info['detections']:    
         img=cv2.imread(imagen_info['image_name'])
- #       img_g=cv2.resize(img,(2500,1500))
+  #       img_g=cv2.resize(img,(2500,1500))
         cv2.imwrite(os.path.join(path_imagenes_boundingbox,imagen_info['image_name'].split("/")[-1]),img)
         
 
