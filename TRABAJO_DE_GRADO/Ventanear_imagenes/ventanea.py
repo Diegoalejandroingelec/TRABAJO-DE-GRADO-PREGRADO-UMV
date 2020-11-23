@@ -36,7 +36,7 @@ def carga_img_info(path_imagenes,nombre_de_la_imagen):
 tipo=[]
 def calcula_interseccion_entre_cuadrados(info,x_min,y_min,x_max,y_max):
     global tipo
-    
+    flag_es_recuadro_valido=False
     esta_en_ventana=False
     info_aux=[0,0,0,0]
     if (info[0]< x_min) and (info[1] < y_min) and (info[2]>x_min) and (info[3]>y_min) and (info[2]<=x_max) and (info[3]<=y_max):
@@ -118,8 +118,15 @@ def calcula_interseccion_entre_cuadrados(info,x_min,y_min,x_max,y_max):
         info_aux=([0,0,x_max-x_min,y_max-y_min])
         esta_en_ventana=True
         tipo.append('c15')
-        
-    return info_aux,esta_en_ventana
+    
+    num_de_pix_recuadro_de_la_ventana=(info_aux[2]-info_aux[0])*(info_aux[3]-info_aux[1])
+    num_de_pix_recuadro_img_grande=(info[2]-info[0])*(info[3]-info[1])
+    porc_pix=(num_de_pix_recuadro_de_la_ventana*100)/num_de_pix_recuadro_img_grande
+    if porc_pix>20:
+        flag_es_recuadro_valido=True
+    
+    
+    return info_aux,esta_en_ventana,flag_es_recuadro_valido
     
 
 def encuentra_imagenes_sin_recuadros_de_interes(path_imagenes,multi_df):
@@ -151,9 +158,9 @@ def encuentra_imagenes_sin_recuadros_de_interes(path_imagenes,multi_df):
    
     
     
-path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS_dia2/img_diego_dia2/etiquetas_dia2_diego/vott-csv-export/'
-path_CSV='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS_dia2/img_diego_dia2/etiquetas_dia2_diego/vott-csv-export/fallas_dia2-export.csv'
-path_guarda_imagenes_ventaneadas='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/img_ventaneadas_dia2'
+path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/UMV/Images/'
+path_CSV='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/UMV/Images/etiquetas.csv'
+path_guarda_imagenes_ventaneadas='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/UMV/JPEGImages'
 
 try:
     os.mkdir(path_guarda_imagenes_ventaneadas) 
@@ -212,26 +219,27 @@ for imagenes_en_el_csv in  nombres_de_clases_de_interes:
             info=(row[["xmin", "ymin", "xmax", "ymax"]].tolist())
             clase=(row[["label"]].tolist())
             
-            recuadro,bandera=calcula_interseccion_entre_cuadrados(info,x_min,y_min,x_max,y_max)
-            
-            if bandera:
-                if (recuadro[0]==0 and recuadro[1]==0) or (recuadro[1]==0 and recuadro[2]==(x_max-x_min)) or (recuadro[0]==0 and recuadro[3]==(y_max-y_min)) or (recuadro[2]==(x_max-x_min) and recuadro[3]==(y_max-y_min)):
-                    if recuadro[2]-recuadro[0]>20 and recuadro[3]-recuadro[1]>20:
-                        info_csv.append([filename_1,recuadro[0],recuadro[1],recuadro[2],recuadro[3],clase[0],u])
-                if (recuadro[1]==0 and (not (recuadro[0]==0)) and (not (recuadro[2]==x_max-x_min))) or (recuadro[3]==y_max-y_min and not (recuadro[2]==(x_max-x_min)) and not (recuadro[0]==0)):
-                    if recuadro[3]-recuadro[1]>20:
-                        info_csv.append([filename_1,recuadro[0],recuadro[1],recuadro[2],recuadro[3],clase[0],u])
-                if (not recuadro[1]==0 and (recuadro[0]==0) and not (recuadro[3]==y_max-y_min)) or (not recuadro[1]==0 and (recuadro[2]==x_max-x_min) and not (recuadro[3]==y_max-y_min)):
-                    if recuadro[2]-recuadro[0]>20:
-                        info_csv.append([filename_1,recuadro[0],recuadro[1],recuadro[2],recuadro[3],clase[0],u])
-                if not (recuadro[0]==0 or recuadro[1]==0 or recuadro[2]==(x_max-x_min) or recuadro[3]==(y_max-y_min)):
-                    info_csv.append([filename_1,recuadro[0],recuadro[1],recuadro[2],recuadro[3],clase[0],u])
+            recuadro,bandera,recuadro_valido=calcula_interseccion_entre_cuadrados(info,x_min,y_min,x_max,y_max)
+            if bandera and recuadro_valido:
+                info_csv.append([filename_1,recuadro[0],recuadro[1],recuadro[2],recuadro[3],clase[0]])
+            # if bandera:
+            #     if (recuadro[0]==0 and recuadro[1]==0) or (recuadro[1]==0 and recuadro[2]==(x_max-x_min)) or (recuadro[0]==0 and recuadro[3]==(y_max-y_min)) or (recuadro[2]==(x_max-x_min) and recuadro[3]==(y_max-y_min)):
+            #         if recuadro[2]-recuadro[0]>20 and recuadro[3]-recuadro[1]>20:
+            #             info_csv.append([filename_1,recuadro[0],recuadro[1],recuadro[2],recuadro[3],clase[0],u])
+            #     if (recuadro[1]==0 and (not (recuadro[0]==0)) and (not (recuadro[2]==x_max-x_min))) or (recuadro[3]==y_max-y_min and not (recuadro[2]==(x_max-x_min)) and not (recuadro[0]==0)):
+            #         if recuadro[3]-recuadro[1]>20:
+            #             info_csv.append([filename_1,recuadro[0],recuadro[1],recuadro[2],recuadro[3],clase[0],u])
+            #     if (not recuadro[1]==0 and (recuadro[0]==0) and not (recuadro[3]==y_max-y_min)) or (not recuadro[1]==0 and (recuadro[2]==x_max-x_min) and not (recuadro[3]==y_max-y_min)):
+            #         if recuadro[2]-recuadro[0]>20:
+            #             info_csv.append([filename_1,recuadro[0],recuadro[1],recuadro[2],recuadro[3],clase[0],u])
+            #     if not (recuadro[0]==0 or recuadro[1]==0 or recuadro[2]==(x_max-x_min) or recuadro[3]==(y_max-y_min)):
+            #         info_csv.append([filename_1,recuadro[0],recuadro[1],recuadro[2],recuadro[3],clase[0]])
                 
                 u=u+1
 
 df = pd.DataFrame(info_csv)    
-df=df.rename(columns={0:"image",1:"xmin",2:"ymin",3:"xmax",4:"ymax",5:"label",6:"num_rec"})
-df.to_csv('etiquetas_de_imagenes_ventaneadas_dia2.csv',index=False)
+df=df.rename(columns={0:"image",1:"xmin",2:"ymin",3:"xmax",4:"ymax",5:"label"})
+df.to_csv('etiquetas_umv_ventaneadas.csv',index=False)
 
 
 
