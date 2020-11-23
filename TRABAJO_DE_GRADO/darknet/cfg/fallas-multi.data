@@ -1,0 +1,6 @@
+classes= 2
+train  =/data/estudiantes/umv/DATOS_PARA_YOLO/train.txt
+valid  =/data/estudiantes/umv/DATOS_PARA_YOLO/test.txt
+names =/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/darknet/data/fallas_multi.names
+backup =/data/estudiantes/umv/darknet/backup
+
