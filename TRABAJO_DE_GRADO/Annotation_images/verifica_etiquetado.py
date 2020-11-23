@@ -81,10 +81,10 @@ def VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica,path_im_prueba):
         if clase[0]=='falla':
             #AZUL
             color=color_0
-        if clase[0]=='libro_cerrado':
+        if clase[0]=='jjjklo':
             #VERDE
             color=color_1
-        if clase[0]=='libro_abierto':
+        if clase[0]=='hueco':
             #ROJO
             color=color_2                           
         cv2.rectangle(img, (int(info[0]), int(info[1])),(int(info[2]), int(info[3])), color, 3)
@@ -133,9 +133,9 @@ def VERIFICA_ETIQUETADO(VoTT_csv,path_resultado_de_verifica,path_im_prueba):
 
 
 
-path_im_prueba='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/66_grados/imagenes_recortadas/img_etiquetadas/vott-csv-export/'
+path_im_prueba='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/img_ventaneadas_dia1_fh/'
 
-VoTT_csv='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/66_grados/imagenes_recortadas/img_etiquetadas/vott-csv-export/fallas_dia1-export.csv'
+VoTT_csv='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/etiquetas_dia1_fh.csv'
 VoTT_csv_de_img_ventaneadas='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Annotation_images/IMAGENES_ETIQUETADAS/vott-csv-export/archivo_fusionado.csv'
 
 
