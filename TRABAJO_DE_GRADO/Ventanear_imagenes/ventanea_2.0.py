@@ -20,11 +20,11 @@ def save_obj(obj, name ):
     
         
         
-path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS_dia2/img_diego_dia2/'
+path_imagenes='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/nueva_vista_de_pajaro/RESULTADOS_dia2/imagenes_recortadas/'
 path_guarda_imagenes_ventaneadas='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/img_ventaneadas_para_deteccion_dia2'
 
 path_datos_del_ventaneado='/home/diego/TRABAJO-DE-GRADO-PREGRADO-UMV/TRABAJO_DE_GRADO/Ventanear_imagenes/datos_del_ventaneado/'
-
+nombre_datos_del_ventaneado='datos_ventaneado_dia2'
 try:
     os.mkdir(path_datos_del_ventaneado) 
 except OSError as e:
@@ -121,4 +121,4 @@ dicci_ventaneado={'imagen':nom_img,
                   'ymin_v':y_min_v,
                   'ancho_ve':ancho_v,
                   'alto_ve':alto_v}
-save_obj(dicci_ventaneado,'datos_ventaneado_dia2')
+save_obj(dicci_ventaneado,nombre_datos_del_ventaneado)
